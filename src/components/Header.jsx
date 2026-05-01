@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { FaBars, FaTimes, FaBell } from "react-icons/fa";
 import logo from "../assets/images/logo.jpg";
 import { Link } from "react-router-dom";
+ import { MdMenuBook } from "react-icons/md";
+ import { FiUser } from "react-icons/fi";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -63,9 +65,44 @@ const Header = () => {
             </Link>
           ))}
           {/* ✅ Announcements Icon (Desktop) */}
-          <Link to="/announcements" className="text-xl hover:text-gray-300">
+          {/* <Link to="/announcements" className="text-xl hover:text-gray-300">
             <FaBell />
-          </Link>
+          </Link> */}
+         
+
+<div className="relative group">
+  <Link
+    to="/bible-verses"
+    className="flex items-center justify-center w-10 h-10 rounded-md 
+                transition"
+  >
+    <MdMenuBook className="text-xl text-gray-300 group-hover:text-white" />
+  </Link>
+
+  <span className="absolute bottom-[-28px] left-1/2 -translate-x-1/2 
+    text-xs bg-black text-white px-2 py-1 rounded opacity-0 
+    group-hover:opacity-100 whitespace-nowrap">
+    Bible Verses
+  </span>
+</div>
+
+
+<div className="relative group -ml-5">
+  <Link
+  to="/profile"
+    className="w-10 h-10 flex items-center justify-center 
+                transition"
+  >
+    <FiUser className="text-lg text-white" />
+  </Link>
+
+  {/* Tooltip */}
+  <span className="absolute bottom-[-28px] left-1/2 -translate-x-1/2 
+    text-xs bg-black text-white px-2 py-1 rounded opacity-0 
+    group-hover:opacity-100 whitespace-nowrap">
+    Profile
+  </span>
+</div>
         </nav>
 
         {/* Mobile Menu Icon */}
