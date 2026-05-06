@@ -1313,10 +1313,289 @@
 // }
 
 
+// import { useState, useEffect } from "react";
+// import { X, Upload } from "lucide-react";
+
+// export default function EventEditModal({ isOpen, onClose, onSave, data }) {
+//   const [categories, setCategories] = useState([]);
+//   const [formData, setFormData] = useState({
+//     id: null,
+//     section: "",
+//     title: "",
+//     description: "",
+//     highlight: "",
+//     date: "",
+//     image: ""
+//   });
+//   const [imagePreview, setImagePreview] = useState("");
+
+//   // LOAD CATEGORIES
+//   useEffect(() => {
+//     const data = JSON.parse(localStorage.getItem("eventCategories")) || [];
+//     setCategories(data);
+//   }, []);
+
+//   // LOAD DATA TO EDIT
+//   useEffect(() => {
+//     if (data) {
+//       setFormData({
+//         id: data.id,
+//         section: data.section || "",
+//         title: data.title || "",
+//         description: data.description || "",
+//         highlight: data.highlight || "",
+//         date: data.date || "",
+//         image: data.image || ""
+//       });
+//       setImagePreview(data.image || "");
+//     }
+//   }, [data]);
+
+//   const handleImageUpload = (e) => {
+//     const file = e.target.files[0];
+//     if (file) {
+//       const reader = new FileReader();
+//       reader.onloadend = () => {
+//         setImagePreview(reader.result);
+//         setFormData({ ...formData, image: reader.result });
+//       };
+//       reader.readAsDataURL(file);
+//     }
+//   };
+
+//   const handleChange = (field, value) => {
+//     setFormData(prev => ({ ...prev, [field]: value }));
+//   };
+
+//   const handleSubmit = () => {
+//     if (!formData.section || !formData.title || !formData.description) {
+//       alert("Please fill all required fields");
+//       return;
+//     }
+
+//     onSave(formData);
+//   };
+
+//   if (!isOpen) return null;
+
+//   return (
+//     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+//       <div className="bg-white rounded-lg w-full max-w-xl mx-4 shadow-xl max-h-[90vh] overflow-y-auto">
+        
+//         {/* Header */}
+//         <div className="bg-yellow-500 px-4 py-2.5 rounded-t-lg flex justify-between items-center sticky top-0">
+//           <h3 className="text-sm font-semibold text-white">Edit Event</h3>
+//           <button onClick={onClose} className="text-white hover:text-gray-200">
+//             <X size={16} />
+//           </button>
+//         </div>
+        
+//         {/* Body */}
+//         <div className="p-3">
+//           {/* IMAGE UPLOAD - MOVED TO TOP */}
+//           {/* <div className="mb-3">
+//             <label className="block text-xs font-medium text-gray-700 mb-1">
+//               Event Image
+//             </label>
+//             <div className="flex items-center gap-3">
+//               <label className="cursor-pointer">
+//                 <input
+//                   type="file"
+//                   accept="image/*"
+//                   onChange={handleImageUpload}
+//                   className="hidden"
+//                 />
+//                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-2 text-center hover:border-yellow-500 transition-colors w-24">
+//                   <Upload size={18} className="mx-auto text-gray-400 mb-1" />
+//                   <span className="text-[10px] text-gray-500">Change</span>
+//                 </div>
+//               </label>
+//               {imagePreview && (
+//                 <div className="relative">
+//                   <img src={imagePreview} alt="Preview" className="w-14 h-14 object-cover rounded-lg" />
+//                   <button
+//                     onClick={() => {
+//                       setImagePreview("");
+//                       handleChange("image", "");
+//                     }}
+//                     className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5"
+//                   >
+//                     <X size={10} />
+//                   </button>
+//                 </div>
+//               )}
+//             </div>
+//           </div> */}
+//           <div className="mb-3">
+//   <label className="block text-xs font-medium text-gray-700 mb-1">
+//     Event Image
+//   </label>
+//   <div className="flex items-center gap-3">
+//     <label className="cursor-pointer group">
+//       <input
+//         type="file"
+//         accept="image/*"
+//         onChange={handleImageUpload}
+//         className="hidden"
+//       />
+//       <div className="relative">
+//         {/* Dotted Circle Container - Image shows INSIDE */}
+//         <div className="w-20 h-20 rounded-full border-2 border-dashed border-gray-300 bg-gray-50 flex items-center justify-center overflow-hidden group-hover:border-yellow-500 transition-all duration-200">
+//           {imagePreview ? (
+//             // Image INSIDE the dotted circle
+//             <img 
+//               src={imagePreview} 
+//               alt="Preview" 
+//               className="w-full h-full object-cover"
+//             />
+//           ) : (
+//             // Upload icon when no image
+//             <div className="text-center">
+//               <Upload size={20} className="mx-auto text-gray-400 mb-0.5" />
+//               <span className="text-[9px] text-gray-500">Upload</span>
+//             </div>
+//           )}
+//         </div>
+        
+//         {/* Remove button (X) when image exists */}
+//         {imagePreview && (
+//           <button
+//             onClick={(e) => {
+//               e.preventDefault();
+//               e.stopPropagation();
+//               setImagePreview("");
+//               handleChange("image", "");
+//             }}
+//             className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-all duration-200"
+//           >
+//             <X size={10} />
+//           </button>
+//         )}
+        
+//         {/* Camera icon overlay at bottom right */}
+//         <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+//           <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+//           </svg>
+//         </div>
+//       </div>
+      
+//       {/* Hint text */}
+//       <p className="text-[9px] text-center text-gray-400 mt-1">
+//         {imagePreview ? "Click to change" : "Click to add"}
+//       </p>
+//     </label>
+//   </div>
+// </div>
+
+//           {/* SECTION & DATE - ONE ROW */}
+//           <div className="grid grid-cols-2 gap-2 mb-2">
+//             {/* SECTION DROPDOWN */}
+//             <div>
+//               <label className="block text-xs font-medium text-gray-700 mb-1">
+//                 Event Section <span className="text-red-500">*</span>
+//               </label>
+//               <select
+//                 value={formData.section}
+//                 onChange={(e) => handleChange("section", e.target.value)}
+//                 className="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-yellow-500"
+//                 required
+//               >
+//                 <option value="">Select Section</option>
+//                 {categories.map(cat => (
+//                   <option key={cat.id} value={cat.name}>{cat.name}</option>
+//                 ))}
+//               </select>
+//             </div>
+
+//             {/* DATE */}
+//             <div>
+//               <label className="block text-xs font-medium text-gray-700 mb-1">
+//                 Event Date <span className="text-red-500">*</span>
+//               </label>
+//               <input
+//                 type="date"
+//                 value={formData.date}
+//                 onChange={(e) => handleChange("date", e.target.value)}
+//                 className="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-yellow-500"
+//                 required
+//               />
+//             </div>
+//           </div>
+
+//           {/* TITLE & DESCRIPTION - ONE ROW */}
+//           <div className="grid grid-cols-2 gap-2 mb-2">
+//             {/* TITLE */}
+//             <div>
+//               <label className="block text-xs font-medium text-gray-700 mb-1">
+//                 Event Title <span className="text-red-500">*</span>
+//               </label>
+//               <input
+//                 placeholder="Enter event title"
+//                 value={formData.title}
+//                 onChange={(e) => handleChange("title", e.target.value)}
+//                 className="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-yellow-500"
+//                 required
+//               />
+//             </div>
+
+//             {/* DESCRIPTION */}
+//             <div>
+//               <label className="block text-xs font-medium text-gray-700 mb-1">
+//                 Description <span className="text-red-500">*</span>
+//               </label>
+//               <textarea
+//                 rows="2"
+//                 placeholder="Event description"
+//                 value={formData.description}
+//                 onChange={(e) => handleChange("description", e.target.value)}
+//                 className="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-yellow-500"
+//                 required
+//               />
+//             </div>
+//           </div>
+
+//           {/* HIGHLIGHT - FULL WIDTH */}
+//           <div className="mb-2">
+//             <label className="block text-xs font-medium text-gray-700 mb-1">
+//               Highlight / Key Points
+//             </label>
+//             <textarea
+//               rows="3"
+//               placeholder="Special highlights or key points about this event"
+//               value={formData.highlight}
+//               onChange={(e) => handleChange("highlight", e.target.value)}
+//               className="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-yellow-500"
+//             />
+//           </div>
+//         </div>
+
+//         {/* Footer */}
+//         <div className="px-3 py-2 bg-gray-50 rounded-b-lg flex justify-end gap-2 sticky bottom-0">
+//           <button
+//             onClick={onClose}
+//             className="px-3 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+//           >
+//             Cancel
+//           </button>
+//           <button
+//             onClick={handleSubmit}
+//             className="px-3 py-1 text-xs font-medium text-white bg-green-600 rounded-md hover:bg-green-700 shadow-sm"
+//           >
+//             Update Event
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
 import { useState, useEffect } from "react";
 import { X, Upload } from "lucide-react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../../firebase";
 
-export default function EventEditModal({ isOpen, onClose, onSave, data }) {
+export default function EventEditModal({ isOpen, onClose, onSave, data, categories: propCategories }) {
   const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
     id: null,
@@ -1329,11 +1608,30 @@ export default function EventEditModal({ isOpen, onClose, onSave, data }) {
   });
   const [imagePreview, setImagePreview] = useState("");
 
-  // LOAD CATEGORIES
+  // LOAD CATEGORIES FROM FIREBASE (if not passed as prop)
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("eventCategories")) || [];
-    setCategories(data);
-  }, []);
+    const loadCategories = async () => {
+      try {
+        // Use prop categories if provided, otherwise fetch from Firebase
+        if (propCategories && propCategories.length > 0) {
+          setCategories(propCategories);
+        } else {
+          const snap = await getDocs(collection(db, "eventCategories"));
+          const data = snap.docs.map(doc => ({
+            id: doc.id,
+            name: doc.data().name
+          }));
+          setCategories(data);
+        }
+      } catch (error) {
+        console.error("Error loading categories:", error);
+      }
+    };
+    
+    if (isOpen) {
+      loadCategories();
+    }
+  }, [isOpen, propCategories]);
 
   // LOAD DATA TO EDIT
   useEffect(() => {
@@ -1351,15 +1649,62 @@ export default function EventEditModal({ isOpen, onClose, onSave, data }) {
     }
   }, [data]);
 
-  const handleImageUpload = (e) => {
+  // Upload to Cloudinary
+  const uploadToCloudinary = async (file) => {
+    const CLOUD_NAME = "ddqklsfmc";
+    const UPLOAD_PRESET = "event_upload";
+    
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET);
+    
+    try {
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error?.message || "Upload failed");
+      }
+      
+      return data.secure_url;
+    } catch (error) {
+      console.error("Cloudinary upload error:", error);
+      throw error;
+    }
+  };
+
+  const handleImageUpload = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-        setFormData({ ...formData, image: reader.result });
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+    
+    if (!file.type.startsWith('image/')) {
+      alert("Please upload an image file");
+      return;
+    }
+    
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Image too large. Please select under 2MB");
+      return;
+    }
+    
+    // Show preview immediately
+    setImagePreview(URL.createObjectURL(file));
+    
+    try {
+      // Upload to Cloudinary
+      const imageUrl = await uploadToCloudinary(file);
+      setFormData({ ...formData, image: imageUrl });
+    } catch (error) {
+      console.error("Upload failed:", error);
+      alert("Failed to upload image. Please try again.");
+      setImagePreview(formData.image);
     }
   };
 
@@ -1392,38 +1737,60 @@ export default function EventEditModal({ isOpen, onClose, onSave, data }) {
         
         {/* Body */}
         <div className="p-3">
-          {/* IMAGE UPLOAD - MOVED TO TOP */}
+          {/* IMAGE UPLOAD */}
           <div className="mb-3">
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Event Image
             </label>
             <div className="flex items-center gap-3">
-              <label className="cursor-pointer">
+              <label className="cursor-pointer group">
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleImageUpload}
                   className="hidden"
                 />
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-2 text-center hover:border-yellow-500 transition-colors w-24">
-                  <Upload size={18} className="mx-auto text-gray-400 mb-1" />
-                  <span className="text-[10px] text-gray-500">Change</span>
-                </div>
-              </label>
-              {imagePreview && (
                 <div className="relative">
-                  <img src={imagePreview} alt="Preview" className="w-14 h-14 object-cover rounded-lg" />
-                  <button
-                    onClick={() => {
-                      setImagePreview("");
-                      handleChange("image", "");
-                    }}
-                    className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5"
-                  >
-                    <X size={10} />
-                  </button>
+                  <div className="w-20 h-20 rounded-full border-2 border-dashed border-gray-300 bg-gray-50 flex items-center justify-center overflow-hidden group-hover:border-yellow-500 transition-all duration-200">
+                    {imagePreview ? (
+                      <img 
+                        src={imagePreview} 
+                        alt="Preview" 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="text-center">
+                        <Upload size={20} className="mx-auto text-gray-400 mb-0.5" />
+                        <span className="text-[9px] text-gray-500">Upload</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {imagePreview && (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setImagePreview("");
+                        handleChange("image", "");
+                      }}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-all duration-200"
+                    >
+                      <X size={10} />
+                    </button>
+                  )}
+                  
+                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    </svg>
+                  </div>
                 </div>
-              )}
+                
+                <p className="text-[9px] text-center text-gray-400 mt-1">
+                  {imagePreview ? "Click to change" : "Click to add"}
+                </p>
+              </label>
             </div>
           </div>
 
@@ -1501,11 +1868,14 @@ export default function EventEditModal({ isOpen, onClose, onSave, data }) {
             </label>
             <textarea
               rows="3"
-              placeholder="Special highlights or key points about this event"
+              placeholder="Special highlights or key points about this event (one per line)"
               value={formData.highlight}
               onChange={(e) => handleChange("highlight", e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-yellow-500"
             />
+            <p className="text-[9px] text-gray-400 mt-0.5">
+              Tip: Enter each highlight on a new line
+            </p>
           </div>
         </div>
 

@@ -74,8 +74,16 @@ import { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import logoImage from "../../assets/images/logo.jpg"
+import { auth, db } from "../../firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+
+
+
 
 const Login = () => {
+  
   // Add your logo image import here
   // import logoImage from "./path-to-your-logo.png"; // Uncomment and add your logo path
   
@@ -88,7 +96,10 @@ const Login = () => {
     rememberMe: false,
   });
 
+  
+
   const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -120,15 +131,106 @@ const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validateForm()) {
-      toast.success("Login successful! 🎉");
-      console.log("Login Data:", formData);
-    } else {
-      toast.error("Please fill all fields correctly");
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   if (validateForm()) {
+  //     toast.success("Login successful! 🎉");
+  //     console.log("Login Data:", formData);
+  //   } else {
+  //     toast.error("Please fill all fields correctly");
+  //   }
+  // };
+
+//   const handleSubmit = async (e) => {
+//   e.preventDefault();
+
+//   if (!validateForm()) {
+//     toast.error("Please fill all fields correctly");
+//     return;
+//   }
+
+//   try {
+//     // 🔐 Firebase login
+//     const userCredential = await signInWithEmailAndPassword(
+//       auth,
+//       formData.email,
+//       formData.password
+//     );
+
+//     const user = userCredential.user;
+
+//     // 📦 Get role from Firestore
+//     const ref = doc(db, "users", user.uid);
+//     const snap = await getDoc(ref);
+
+//     if (!snap.exists()) {
+//       toast.error("User role not found");
+//       return;
+//     }
+
+//     const role = snap.data().role;
+
+//     // 🚀 Redirect
+//     if (role === "admin") {
+//       navigate("/admin/dashboard");
+//     } else {
+//       navigate("/");
+//     }
+
+//     toast.success("Login successful 🎉");
+//   } catch (error) {
+//     toast.error(error.message);
+//   }
+// };
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!validateForm()) {
+    toast.error("Please fill all fields correctly");
+    return;
+  }
+
+  try {
+    // 🔐 Login
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      formData.email,
+      formData.password
+    );
+
+    const user = userCredential.user;
+
+    console.log("Logged UID:", user.uid);
+
+    // 📦 Get Firestore user
+    const ref = doc(db, "users", user.uid);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+      console.log("No Firestore user found");
+      toast.error("User not found in DB");
+      return;
     }
-  };
+
+    const role = snap.data().role;
+
+    console.log("ROLE:", role);
+
+    // 🚀 Redirect
+    if (role === "admin") {
+      navigate("/admin/dashboard");
+    } else {
+      navigate("/");
+    }
+
+    toast.success("Login successful 🎉");
+
+  } catch (error) {
+    console.log(error);
+    toast.error(error.message);
+  }
+};
 
   return (
     <div className="relative h-screen w-full text-white">

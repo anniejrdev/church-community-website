@@ -2,6 +2,15 @@ import { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, X, Calendar, Tag, Folder, Image as ImageIcon } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc
+} from "firebase/firestore";
+import { db } from "../../../firebase";
 
 export default function GallerySection() {
   const [sections, setSections] = useState([]);
@@ -9,10 +18,25 @@ export default function GallerySection() {
   const [current, setCurrent] = useState(null);
 
   // LOAD
-  useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("gallerySections")) || [];
+ useEffect(() => {
+  loadSections();
+}, []);
+
+const loadSections = async () => {
+  try {
+    const snap = await getDocs(collection(db, "gallerySections"));
+
+    const data = snap.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
     setSections(data);
-  }, []);
+  } catch (error) {
+    console.log(error);
+    toast.error("Failed to load sections");
+  }
+};
 
   // OPEN MODAL
   const openModal = (section = null) => {
@@ -25,46 +49,90 @@ export default function GallerySection() {
   };
 
   // SAVE
-  const handleSave = (e) => {
-    e.preventDefault();
+  // const handleSave = (e) => {
+  //   e.preventDefault();
 
-    if (!current.name) {
-      toast.warning("Enter section name");
-      return;
-    }
+  //   if (!current.name) {
+  //     toast.warning("Enter section name");
+  //     return;
+  //   }
 
-    let updated;
+  //   let updated;
 
+  //   if (current.id) {
+  //     // EDIT
+  //     updated = sections.map((s) =>
+  //       s.id === current.id ? current : s
+  //     );
+  //     toast.success("Updated successfully");
+  //   } else {
+  //     // ADD
+  //     const newSection = {
+  //       ...current,
+  //       id: Date.now(),
+  //     };
+  //     updated = [...sections, newSection];
+  //     toast.success("Added successfully");
+  //   }
+
+  //   setSections(updated);
+  //   localStorage.setItem("gallerySections", JSON.stringify(updated));
+  //   setIsModalOpen(false);
+  // };
+  const handleSave = async (e) => {
+  e.preventDefault();
+
+  if (!current.name) {
+    toast.warning("Enter section name");
+    return;
+  }
+
+  try {
     if (current.id) {
-      // EDIT
-      updated = sections.map((s) =>
-        s.id === current.id ? current : s
-      );
+      // ✏️ UPDATE
+      await updateDoc(doc(db, "gallerySections", current.id), {
+        name: current.name,
+      });
+
       toast.success("Updated successfully");
     } else {
-      // ADD
-      const newSection = {
-        ...current,
-        id: Date.now(),
-      };
-      updated = [...sections, newSection];
+      // ➕ ADD
+      await addDoc(collection(db, "gallerySections"), {
+        name: current.name,
+        createdAt: new Date(),
+      });
+
       toast.success("Added successfully");
     }
 
-    setSections(updated);
-    localStorage.setItem("gallerySections", JSON.stringify(updated));
+    loadSections();
     setIsModalOpen(false);
-  };
+  } catch (error) {
+    console.log(error);
+    toast.error("Failed");
+  }
+};
 
   // DELETE
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this gallery section?")) {
-      const updated = sections.filter((s) => s.id !== id);
-      setSections(updated);
-      localStorage.setItem("gallerySections", JSON.stringify(updated));
-      toast.error("Deleted successfully");
-    }
-  };
+  // const handleDelete = (id) => {
+  //   if (window.confirm("Are you sure you want to delete this gallery section?")) {
+  //     const updated = sections.filter((s) => s.id !== id);
+  //     setSections(updated);
+  //     localStorage.setItem("gallerySections", JSON.stringify(updated));
+  //     toast.error("Deleted successfully");
+  //   }
+  // };
+  const handleDelete = async (id) => {
+  if (!window.confirm("Delete this section?")) return;
+
+  try {
+    await deleteDoc(doc(db, "gallerySections", id));
+    toast.error("Deleted successfully");
+    loadSections();
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   // Generate gradient colors based on section name
   const getGradient = (name) => {

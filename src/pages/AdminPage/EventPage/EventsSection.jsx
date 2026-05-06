@@ -263,6 +263,8 @@ import { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, X, Calendar, Tag, Folder, MoreVertical } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
+import { db } from "../../../firebase";
 
 export default function EventCategories() {
   const [categories, setCategories] = useState([]);
@@ -271,10 +273,23 @@ export default function EventCategories() {
 
   // LOAD
   useEffect(() => {
-    const data =
-      JSON.parse(localStorage.getItem("eventCategories")) || [];
+  loadCategories();
+}, []);
+
+const loadCategories = async () => {
+  try {
+    const snap = await getDocs(collection(db, "eventCategories"));
+
+    const data = snap.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
     setCategories(data);
-  }, []);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   // OPEN MODAL
   const openModal = (cat = null) => {
@@ -287,50 +302,92 @@ export default function EventCategories() {
   };
 
   // SAVE
-  const handleSave = (e) => {
-    e.preventDefault();
+  // const handleSave = (e) => {
+  //   e.preventDefault();
 
-    if (!current.name) {
-      toast.warning("Enter category name");
-      return;
-    }
+  //   if (!current.name) {
+  //     toast.warning("Enter category name");
+  //     return;
+  //   }
 
-    let updated;
+  //   let updated;
 
+  //   if (current.id) {
+  //     // EDIT
+  //     updated = categories.map((c) =>
+  //       c.id === current.id ? current : c
+  //     );
+  //     toast.success("Updated successfully");
+  //   } else {
+  //     // ADD
+  //     const newCat = {
+  //       ...current,
+  //       id: Date.now(),
+  //     };
+  //     updated = [...categories, newCat];
+  //     toast.success("Added successfully");
+  //   }
+
+  //   setCategories(updated);
+  //   localStorage.setItem(
+  //     "eventCategories",
+  //     JSON.stringify(updated)
+  //   );
+  //   setIsModalOpen(false);
+  // };
+  const handleSave = async (e) => {
+  e.preventDefault();
+
+  if (!current.name) {
+    toast.warning("Enter category name");
+    return;
+  }
+
+  try {
     if (current.id) {
-      // EDIT
-      updated = categories.map((c) =>
-        c.id === current.id ? current : c
-      );
+      // 🔥 UPDATE
+      await updateDoc(doc(db, "eventCategories", current.id), {
+        name: current.name,
+      });
+
       toast.success("Updated successfully");
     } else {
-      // ADD
-      const newCat = {
-        ...current,
-        id: Date.now(),
-      };
-      updated = [...categories, newCat];
+      // 🔥 ADD
+      await addDoc(collection(db, "eventCategories"), {
+        name: current.name,
+      });
+
       toast.success("Added successfully");
     }
 
-    setCategories(updated);
-    localStorage.setItem(
-      "eventCategories",
-      JSON.stringify(updated)
-    );
+    loadCategories();
     setIsModalOpen(false);
-  };
+
+  } catch (error) {
+    console.log(error);
+    toast.error("Failed");
+  }
+};
 
   // DELETE
-  const handleDelete = (id) => {
-    const updated = categories.filter((c) => c.id !== id);
-    setCategories(updated);
-    localStorage.setItem(
-      "eventCategories",
-      JSON.stringify(updated)
-    );
+  // const handleDelete = (id) => {
+  //   const updated = categories.filter((c) => c.id !== id);
+  //   setCategories(updated);
+  //   localStorage.setItem(
+  //     "eventCategories",
+  //     JSON.stringify(updated)
+  //   );
+  //   toast.error("Deleted successfully");
+  // };
+  const handleDelete = async (id) => {
+  try {
+    await deleteDoc(doc(db, "eventCategories", id));
     toast.error("Deleted successfully");
-  };
+    loadCategories();
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   // Generate gradient colors based on category name
   const getGradient = (name) => {

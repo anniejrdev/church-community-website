@@ -354,24 +354,254 @@
 //   );
 // }
 
+// import { FiDownload } from "react-icons/fi";
+// import { motion } from "framer-motion";
+
+// export default function VersePoster() {
+//   // 👉 Admin will change this full text later
+//   const verse = "If you believe, you will receive whatever you ask for in prayer.";
+//   const reference = "Matthew 21:22";
+
+//   return (
+//     <div className="min-h-screen bg-black flex flex-col items-center p-4">
+
+//       {/* Top Bar */}
+//       <div className="w-full max-w-xl flex items-center justify-between mb-4 mt-35">
+//         <div>
+            
+//         </div>
+
+//         {/* Today's Promise - Improved */}
+//         <div className="relative">
+//           <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 blur-xl rounded-full"></div>
+//           <h2 className="relative text-white text-xs tracking-[0.2em] font-medium px-4 py-1.5 bg-white/5 backdrop-blur-sm rounded-full border border-white/10">
+//             ✨ TODAY'S PROMISE ✨
+//           </h2>
+//         </div>
+
+//         {/* Save Button - Improved */}
+//         {/* <motion.button 
+//           whileHover={{ scale: 1.05 }}
+//           whileTap={{ scale: 0.95 }}
+//           className="flex items-center gap-1.5 text-xs px-3 py-1.5 bg-gradient-to-r from-yellow-500 to-yellow-500 text-white rounded-lg hover:shadow-lg transition-all duration-200"
+//         >
+//           <FiDownload size={12} />
+//           Save
+//         </motion.button> */}
+//         <motion.button 
+//   whileHover={{ scale: 1.05 }}
+//   whileTap={{ scale: 0.95 }}
+//   className="relative group flex items-center justify-center text-xs p-1.5  text-white rounded-lg hover:shadow-lg transition-all duration-200 w-8 h-8"
+// >
+//   <FiDownload size={14} />
+  
+//   {/* Tooltip */}
+//   <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 
+//                    opacity-0 group-hover:opacity-100 transition-opacity duration-200
+//                    bg-gray-800 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap
+//                    pointer-events-none">
+//     Save poster
+//   </span>
+// </motion.button>
+//       </div>
+
+//       {/* Poster */}
+//       <div
+//         id="poster"
+//         className="relative w-full mt-5 max-w-xl h-[400px] rounded-lg overflow-hidden shadow-xl"
+//       >
+        
+//         {/* Background */}
+//         <img
+//           src="https://images.openai.com/static-rsc-4/HySvV1ZpmXncsKLJOXx_4_2wuAxP5H9qTmsIN7J3-F43cp4Rnapu1MwImvw5MMlz8bkQW5Zr4CfCdZgI6QJPaBCKp4F-qwpvkAE7fDCXYhMIsBI-4bMptY-Ejv5voxZlAxj8-rkZtjvgTe5J8xvRqsMy-5SsB10aA4UrzmGuESIbou0wlqPbHvY0f2kQaC9M?purpose=fullsize"
+//           alt="verse"
+//           className="absolute inset-0 w-full h-full object-cover"
+//         />
+
+//         <div className="absolute inset-0 bg-black/50"></div>
+
+//         {/* Content */}
+//         <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-6 text-white">
+          
+//           {/* Verse (single h tag) */}
+//           <h1 className="text-2xl md:text-3xl font-semibold leading-relaxed">
+//             "{verse}"
+//           </h1>
+
+//           {/* Reference */}
+//           <h2 className="mt-4 text-sm tracking-widest">
+//             — {reference}
+//           </h2>
+
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+import { useState, useEffect } from "react";
 import { FiDownload } from "react-icons/fi";
 import { motion } from "framer-motion";
+import { db } from "../../firebase";
+import { collection, getDocs, query, where, limit } from "firebase/firestore";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function VersePoster() {
-  // 👉 Admin will change this full text later
-  const verse = "If you believe, you will receive whatever you ask for in prayer.";
-  const reference = "Matthew 21:22";
+  const [posterData, setPosterData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState(false);
+  const [currentDate, setCurrentDate] = useState("");
 
+  // Get today's date in YYYY-MM-DD format
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  // Format date for display
+  const formatDateDisplay = (dateString) => {
+    if (!dateString) return "";
+    const [year, month, day] = dateString.split('-');
+    const date = new Date(year, month - 1, day);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  };
+
+  // Check if date changed (for real-time update at midnight)
+  useEffect(() => {
+    const today = getTodayDate();
+    setCurrentDate(today);
+    
+    // Check for date change at midnight
+    const now = new Date();
+    const msUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0) - now;
+    
+    const timer = setTimeout(() => {
+      window.location.reload(); // Reload page at midnight to get new poster
+    }, msUntilMidnight);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Load today's poster from Firebase - EXACT DATE MATCH ONLY
+  useEffect(() => {
+    loadTodayPoster();
+  }, []);
+
+  const loadTodayPoster = async () => {
+    setLoading(true);
+    try {
+      const todayDate = getTodayDate();
+      console.log("📅 Today's date:", todayDate);
+      
+      // Query EXACTLY for today's poster - NO FALLBACK
+      const q = query(
+        collection(db, "dailyBible"),
+        where("date", "==", todayDate),
+        limit(1)
+      );
+      
+      const snapshot = await getDocs(q);
+      
+      if (!snapshot.empty) {
+        const doc = snapshot.docs[0];
+        setPosterData({
+          id: doc.id,
+          ...doc.data()
+        });
+        console.log("✅ Poster found for today:", doc.data().date);
+      } else {
+        // NO FALLBACK - set to null (show nothing)
+        console.log("❌ No poster found for today:", todayDate);
+        setPosterData(null);
+      }
+    } catch (error) {
+      console.error("Error loading poster:", error);
+      setPosterData(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Direct download of image
+  const downloadPoster = async () => {
+    if (!posterData?.image || downloading) return;
+    
+    setDownloading(true);
+    try {
+      const response = await fetch(posterData.image);
+      const blob = await response.blob();
+      
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      const todayDate = getTodayDate();
+      link.href = url;
+      link.download = `daily-poster-${todayDate}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast.success("Poster downloaded successfully!");
+    } catch (error) {
+      console.error("Error downloading poster:", error);
+      toast.error("Failed to download poster");
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // No poster for today - Show nothing (blank/empty state)
+  if (!posterData) {
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4">
+        <ToastContainer position="top-right" autoClose={2000} theme="colored" />
+        <div className="text-center">
+          <div className="w-full max-w-xl">
+            {/* Empty state - No poster, no date, no promise heading */}
+            <div className="bg-gray-900/50 rounded-lg p-8 border border-gray-800">
+              <p className="text-gray-500 text-sm">
+                No poster available for today.
+              </p>
+              <p className="text-gray-600 text-xs mt-2">
+                Please check back later.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Poster exists for today - Show everything
   return (
     <div className="min-h-screen bg-black flex flex-col items-center p-4">
+      <ToastContainer position="top-right" autoClose={2000} theme="colored" />
 
       {/* Top Bar */}
       <div className="w-full max-w-xl flex items-center justify-between mb-4 mt-35">
-        <div>
-            
-        </div>
+        <div></div>
 
-        {/* Today's Promise - Improved */}
+        {/* TODAY'S PROMISE Heading - Only shows when poster exists */}
         <div className="relative">
           <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 blur-xl rounded-full"></div>
           <h2 className="relative text-white text-xs tracking-[0.2em] font-medium px-4 py-1.5 bg-white/5 backdrop-blur-sm rounded-full border border-white/10">
@@ -379,61 +609,35 @@ export default function VersePoster() {
           </h2>
         </div>
 
-        {/* Save Button - Improved */}
-        {/* <motion.button 
+        {/* Save Button */}
+        <motion.button 
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="flex items-center gap-1.5 text-xs px-3 py-1.5 bg-gradient-to-r from-yellow-500 to-yellow-500 text-white rounded-lg hover:shadow-lg transition-all duration-200"
+          onClick={downloadPoster}
+          disabled={downloading}
+          className="relative group flex items-center justify-center text-xs p-1.5 text-white rounded-lg hover:shadow-lg transition-all duration-200 w-8 h-8 disabled:opacity-50"
         >
-          <FiDownload size={12} />
-          Save
-        </motion.button> */}
-        <motion.button 
-  whileHover={{ scale: 1.05 }}
-  whileTap={{ scale: 0.95 }}
-  className="relative group flex items-center justify-center text-xs p-1.5  text-white rounded-lg hover:shadow-lg transition-all duration-200 w-8 h-8"
->
-  <FiDownload size={14} />
-  
-  {/* Tooltip */}
-  <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 
-                   opacity-0 group-hover:opacity-100 transition-opacity duration-200
-                   bg-gray-800 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap
-                   pointer-events-none">
-    Save poster
-  </span>
-</motion.button>
+          <FiDownload size={14} className={downloading ? "animate-pulse" : ""} />
+          
+          <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 
+                         opacity-0 group-hover:opacity-100 transition-opacity duration-200
+                         bg-gray-800 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap
+                         pointer-events-none">
+            {downloading ? "Downloading..." : "Save poster"}
+          </span>
+        </motion.button>
       </div>
 
       {/* Poster */}
-      <div
-        id="poster"
-        className="relative w-full mt-5 max-w-xl h-[400px] rounded-lg overflow-hidden shadow-xl"
-      >
-        
-        {/* Background */}
+      <div className="relative w-full mt-5 max-w-xl rounded-lg overflow-hidden shadow-xl">
         <img
-          src="https://images.openai.com/static-rsc-4/HySvV1ZpmXncsKLJOXx_4_2wuAxP5H9qTmsIN7J3-F43cp4Rnapu1MwImvw5MMlz8bkQW5Zr4CfCdZgI6QJPaBCKp4F-qwpvkAE7fDCXYhMIsBI-4bMptY-Ejv5voxZlAxj8-rkZtjvgTe5J8xvRqsMy-5SsB10aA4UrzmGuESIbou0wlqPbHvY0f2kQaC9M?purpose=fullsize"
-          alt="verse"
-          className="absolute inset-0 w-full h-full object-cover"
+          src={posterData.image}
+          alt="Daily Bible Poster"
+          className="w-full h-auto object-contain"
+          onError={(e) => {
+            e.target.src = "https://via.placeholder.com/800x1000?text=Poster+Not+Available";
+          }}
         />
-
-        <div className="absolute inset-0 bg-black/50"></div>
-
-        {/* Content */}
-        <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-6 text-white">
-          
-          {/* Verse (single h tag) */}
-          <h1 className="text-2xl md:text-3xl font-semibold leading-relaxed">
-            "{verse}"
-          </h1>
-
-          {/* Reference */}
-          <h2 className="mt-4 text-sm tracking-widest">
-            — {reference}
-          </h2>
-
-        </div>
       </div>
     </div>
   );

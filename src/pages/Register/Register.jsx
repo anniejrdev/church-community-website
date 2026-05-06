@@ -76,6 +76,11 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { GoArrowRight } from "react-icons/go";
 import { FiUser, FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
+import { auth, db } from "../../firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { serverTimestamp } from "firebase/firestore";
+
 
 const Register = () => {
   // Add your logo image import here
@@ -133,16 +138,147 @@ const Register = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validateForm()) {
-      toast.success("Registration successful! 🎉 Please login.");
-      console.log("Register Data:", formData);
-      // Add your registration logic here
-    } else {
-      toast.error("Please fill all fields correctly");
-    }
-  };
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   if (validateForm()) {
+  //     toast.success("Registration successful! 🎉 Please login.");
+  //     console.log("Register Data:", formData);
+  //     // Add your registration logic here
+  //   } else {
+  //     toast.error("Please fill all fields correctly");
+  //   }
+  // };
+//   const handleSubmit = async (e) => {
+//   e.preventDefault();
+
+//   if (!validateForm()) {
+//     toast.error("Please fill all fields correctly");
+//     return;
+//   }
+
+//   try {
+//     // 🔐 Create user in Firebase Auth
+//     const userCredential = await createUserWithEmailAndPassword(
+//       auth,
+//       formData.email,
+//       formData.password
+//     );
+
+//     const user = userCredential.user;
+
+//     // 📦 Save user in Firestore
+//     await setDoc(doc(db, "users", user.uid), {
+//       name: formData.name,
+//       email: formData.email,
+//       role: "user", // default role
+//       createdAt: serverTimestamp()
+//     });
+
+//     toast.success("Registration successful 🎉");
+//   } catch (error) {
+//     toast.error(error.message);
+//   }
+// };
+
+
+// const handleSubmit = async (e) => {
+//   e.preventDefault();
+
+//   if (!validateForm()) return;
+
+//   try {
+//     const userCredential = await createUserWithEmailAndPassword(
+//       auth,
+//       formData.email,
+//       formData.password
+//     );
+
+//     const user = userCredential.user;
+
+//     console.log("UID:", user.uid); // 🔥 debug
+
+//     await setDoc(doc(db, "users", user.uid), {
+//       name: formData.name,
+//       email: formData.email,
+//       role: "user",
+//       createdAt: serverTimestamp()
+//     });
+
+//     console.log("User saved in Firestore");
+
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  // if (!validateForm()) {
+  //   toast.error("Please fill all fields correctly ❌");
+  //   return;
+  // }
+
+  const validateForm = () => {
+  const newErrors = {};
+
+  if (!formData.name.trim()) {
+    newErrors.name = "Name is required";
+  }
+
+  if (!formData.email.trim()) {
+    newErrors.email = "Email is required";
+  } else if (!/\S+@\S+\.\S+/.test(formData.email.trim())) {
+    newErrors.email = "Enter valid email";
+  }
+
+  if (!formData.password) {
+    newErrors.password = "Password is required";
+  } else if (formData.password.length < 6) {
+    newErrors.password = "Min 6 characters";
+  }
+
+  if (!formData.confirmPassword) {
+    newErrors.confirmPassword = "Confirm password required";
+  } else if (formData.password !== formData.confirmPassword) {
+    newErrors.confirmPassword = "Passwords not match";
+  }
+
+  setErrors(newErrors);
+
+  return Object.keys(newErrors).length === 0;
+};
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      formData.email,
+      formData.password
+    );
+
+    const user = userCredential.user;
+
+    console.log("UID:", user.uid);
+
+    await setDoc(doc(db, "users", user.uid), {
+      // name: formData.name,
+      email: formData.email,
+      role: "user",
+      createdAt: serverTimestamp()
+    });
+
+    toast.success("Registration successful 🎉");
+
+    // 🔥 IMPORTANT → redirect to login
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 1500);
+
+  } catch (error) {
+    console.log(error);
+    toast.error(error.message);
+  }
+};
 
   return (
     <div className="relative h-screen w-full text-white">

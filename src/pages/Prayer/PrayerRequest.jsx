@@ -104,6 +104,8 @@ import React, { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
+import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { db } from "../../firebase"; 
 
 const PrayerRequest = () => {
   const [formData, setFormData] = useState({
@@ -119,26 +121,60 @@ const PrayerRequest = () => {
     });
   };
 
-  const handleSubmit = () => {
-    if (!formData.name || !formData.place || !formData.reason) {
-      toast.warning("Please fill all fields");
-      return;
-    }
+  // const handleSubmit = () => {
+  //   if (!formData.name || !formData.place || !formData.reason) {
+  //     toast.warning("Please fill all fields");
+  //     return;
+  //   }
 
-    // WhatsApp message
+  //   // WhatsApp message
+  //   const message = `🙏 Prayer Request\n\nName: ${formData.name}\nPlace: ${formData.place}\nReason: ${formData.reason}`;
+
+  //   const phoneNumber = "916235628283"; // 👉 Father's number (with country code)
+
+  //   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+
+  //   // open WhatsApp
+  //   window.open(whatsappUrl, "_blank");
+
+  //   toast.success("Prayer request sent successfully 🙏");
+
+  //   setFormData({ name: "", place: "", reason: "" });
+  // };
+
+  const handleSubmit = async () => {
+  if (!formData.name || !formData.place || !formData.reason) {
+    toast.warning("Please fill all fields");
+    return;
+  }
+
+  try {
+    // 🔥 1. SAVE TO FIREBASE
+    await addDoc(collection(db, "prayerRequests"), {
+      name: formData.name,
+      place: formData.place,
+      reason: formData.reason,
+      createdAt: Timestamp.now(), // 🔥 important
+    });
+
+    // 🔥 2. WHATSAPP
     const message = `🙏 Prayer Request\n\nName: ${formData.name}\nPlace: ${formData.place}\nReason: ${formData.reason}`;
 
-    const phoneNumber = "916235628283"; // 👉 Father's number (with country code)
+    const phoneNumber = "916235628283";
 
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
-    // open WhatsApp
     window.open(whatsappUrl, "_blank");
 
-    toast.success("Prayer request sent successfully 🙏");
+    toast.success("Prayer request sent 🙏");
 
     setFormData({ name: "", place: "", reason: "" });
-  };
+
+  } catch (error) {
+    console.log(error);
+    toast.error("Failed to send request");
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 flex items-center justify-center px-4">

@@ -912,12 +912,338 @@
 //   );
 // }
 
+// import { useEffect, useState } from "react";
+// import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
+// import { toast, ToastContainer } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+// import OrderOfServiceAddModal from "../OrderOfService/OrderOfServiceAdd"
+// import OrderOfServiceEditModal from "../OrderOfService/OrderOfServiceEdit";
+// import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where } from "firebase/firestore";
+// import { db } from "../../../firebase";
+
+// export default function OrderOfServiceList() {
+//   const [currentDate, setCurrentDate] = useState("");
+//   const [currentDay, setCurrentDay] = useState("");
+//   const [selectedDay, setSelectedDay] = useState("");
+//   const [services, setServices] = useState([]);
+  
+//   // Modal states
+//   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+//   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+//   const [editingService, setEditingService] = useState(null);
+
+//  useEffect(() => {
+//   loadServices();
+// }, []);
+
+// const loadServices = async () => {
+//   try {
+//     const snap = await getDocs(collection(db, "services"));
+//     const data = snap.docs.map(doc => ({
+//       id: doc.id,
+//       ...doc.data()
+//     }));
+
+//     setServices(data);
+//   } catch (error) {
+//     console.log(error);
+//     toast.error("Failed to load services");
+//   }
+// };
+  
+//   // 🔥 CURRENT DATE + DAY
+//   useEffect(() => {
+//     const now = new Date();
+
+//     const date = now.toISOString().split("T")[0];
+
+//     const day = now
+//       .toLocaleDateString("en-US", { weekday: "long" })
+//       .toLowerCase();
+
+//     setCurrentDate(date);
+//     setCurrentDay(day);
+//     setSelectedDay(day); // default filter = today
+//   }, []);
+
+//   // 🔥 FILTER DATA BASED ON SELECTED DAY
+//   const filteredServices = services.filter(
+//     (s) => s.day === selectedDay
+//   );
+
+//   // 🔹 DELETE
+//   // const handleDelete = (id) => {
+//   //   const updated = services.filter((s) => s.id !== id);
+//   //   setServices(updated);
+//   //   localStorage.setItem("services", JSON.stringify(updated));
+//   //   toast.error("Service deleted successfully");
+//   // };
+//  const handleDelete = async (id) => {
+//   if (!window.confirm("Are you sure you want to delete this service?")) return;
+
+//   try {
+//     await deleteDoc(doc(db, "services", id));
+
+//     toast.success("Deleted successfully");
+
+//     loadServicesByDay(selectedDay);
+//   } catch (error) {
+//     console.log(error);
+//     toast.error("Delete failed");
+//   }
+// };
+
+//   // 🔹 Open Add Modal
+//   const handleAddClick = () => {
+//     setIsAddModalOpen(true);
+//   };
+
+//   // 🔹 Save New Service from Modal
+//   // const handleSaveAdd = (newService) => {
+//   //   const existing = JSON.parse(localStorage.getItem("services")) || [];
+//   //   const updated = [...existing, newService];
+//   //   localStorage.setItem("services", JSON.stringify(updated));
+//   //   setServices(updated);
+//   //   toast.success("Service added successfully");
+//   //   setIsAddModalOpen(false);
+//   // };
+//  const handleSaveAdd = async (newService) => {
+//   try {
+//     await addDoc(collection(db, "services"), newService);
+
+//     toast.success("Service added successfully");
+//     setIsAddModalOpen(false);
+
+//     loadServicesByDay(selectedDay); // refresh current day
+//   } catch (error) {
+//     console.log(error);
+//     toast.error("Failed to add service");
+//   }
+// };
+
+//   // 🔹 Open Edit Modal
+//   const handleEditClick = (service) => {
+//     setEditingService(service);
+//     setIsEditModalOpen(true);
+//   };
+
+//   // 🔹 Save Edit from Modal
+//   // const handleSaveEdit = (updatedService) => {
+//   //   const data = JSON.parse(localStorage.getItem("services")) || [];
+//   //   const updated = data.map((s) =>
+//   //     s.id === updatedService.id ? updatedService : s
+//   //   );
+//   //   localStorage.setItem("services", JSON.stringify(updated));
+//   //   setServices(updated);
+//   //   toast.success("Service updated successfully");
+//   //   setIsEditModalOpen(false);
+//   //   setEditingService(null);
+//   // };
+//  const handleSaveEdit = async (updatedService) => {
+//   try {
+//     if (typeof updatedService.id !== "string") {
+//       console.error("Wrong ID:", updatedService.id);
+//       toast.error("Invalid ID");
+//       return;
+//     }
+
+//     const { id, ...data } = updatedService;
+
+//     await updateDoc(doc(db, "services", id), data);
+
+//     toast.success("Updated successfully");
+//     loadServicesByDay(selectedDay);
+//   } catch (error) {
+//     console.log(error);
+//     toast.error("Update failed");
+//   }
+// };
+// useEffect(() => {
+//   if (selectedDay) {
+//     loadServicesByDay(selectedDay);
+//   }
+// }, [selectedDay]);
+
+// // const loadServicesByDay = async (day) => {
+// //   try {
+// //     const data = await getServicesByDay(day); // your API
+// //     setServices(data);
+// //   } catch (err) {
+// //     console.error(err);
+// //   }
+// // };
+// const loadServicesByDay = async (day) => {
+//   try {
+//     const q = query(
+//       collection(db, "services"),
+//       where("day", "==", day)
+//     );
+
+//     const snap = await getDocs(q);
+
+//     const data = snap.docs.map(doc => ({
+//       id: doc.id,
+//       ...doc.data()
+//     }));
+
+//     setServices(data);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+//   return (
+//     <div className="min-h-screen p-6">
+//       <ToastContainer position="top-right" autoClose={2000} theme="colored" />
+      
+//       <div className="max-w-8xl mx-auto">
+//         {/* 🔥 TOP BAR */}
+//         <div className="bg-white mb-6 py-4 -mt-8">
+//           <div className="flex flex-wrap justify-between items-center gap-4">
+//             {/* LEFT */}
+//             <div className="flex items-center gap-4 flex-wrap">
+//               <button
+//                 onClick={handleAddClick}
+//                 className="flex items-center gap-2 border border-yellow-500 text-black px-4 py-2 rounded-lg transition-all duration-200  text-sm font-medium"
+//               >
+//                 <FiPlus size={16} />
+//                 Add New Service
+//               </button>
+
+//               {/* CURRENT DATE + DAY */}
+//               <div className="flex gap-3 bg-gradient-to-r from-gray-50 to-gray-100 px-4 py-2 rounded-lg border border-gray-200">
+//                 <div className="text-sm">
+//                   <span className="font-semibold text-gray-700">📅 Date:</span>
+//                   <span className="ml-2 text-gray-600 font-mono">{currentDate}</span>
+//                 </div>
+//                 <div className="w-px bg-gray-300"></div>
+//                 <div className="text-sm">
+//                   <span className="font-semibold text-gray-700">📆 Day:</span>
+//                   <span className="ml-2 text-gray-600 capitalize font-medium">{currentDay}</span>
+//                 </div>
+//               </div>
+//             </div>
+
+//             {/* RIGHT - DAY FILTER */}
+//             <div className="flex items-center gap-2">
+//               <select
+//                 value={selectedDay}
+//                 onChange={(e) => setSelectedDay(e.target.value)}
+//                 className="text-sm border border-gray-300 rounded-md px-3 py-1.5 bg-white focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-transparent capitalize"
+//               >
+//                 <option value="sunday">Sunday</option>
+//                 <option value="monday">Monday</option>
+//                 <option value="tuesday">Tuesday</option>
+//                 <option value="wednesday">Wednesday</option>
+//                 <option value="thursday">Thursday</option>
+//                 <option value="friday">Friday</option>
+//                 <option value="saturday">Saturday</option>
+//               </select>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* 🔥 TABLE */}
+//         <div className="bg-white rounded">
+//           <div className="h-[65vh] overflow-y-auto">
+//             <table className="w-full text-xs">
+//               {/* HEADER */}
+//               <thead className="sticky top-0 bg-yellow-500 text-white">
+//                 <tr>
+//                   <th className="border border-gray-300 px-2 py-3 text-center w-[60px]">NO</th>
+//                   <th className="border border-gray-300 px-2 py-3 text-center">SERVICE</th>
+//                   <th className="border border-gray-300 px-2 py-3 text-center w-[120px]">TIME</th>
+//                   <th className="border border-gray-300 px-2 py-3 text-center">LOCATION</th>
+//                   <th className="border border-gray-300 px-2 py-3 text-center">DESCRIPTION</th>
+//                   <th className="border border-gray-300 px-2 py-3 text-center w-[120px]">FATHER</th>
+//                   <th className="border border-gray-300 px-2 py-3 text-center w-[100px]">ACTION</th>
+//                 </tr>
+//               </thead>
+
+//               {/* BODY */}
+//               <tbody>
+//                 {filteredServices.length === 0 ? (
+//                   <tr>
+//                     <td colSpan="7" className="text-center py-6 text-gray-500">
+//                       No data found
+//                     </td>
+//                   </tr>
+//                 ) : (
+//                   filteredServices.map((s, i) => (
+//                     <tr key={s.id} className="hover:bg-gray-50">
+//                       <td className="border border-gray-200 text-center py-3">
+//                         {i + 1}
+//                       </td>
+//                       <td className="border border-gray-200 text-center py-2 truncate">
+//                         {s.name}
+//                       </td>
+//                       <td className="border border-gray-200 text-center py-2">
+//                         {s.time}
+//                       </td>
+//                       <td className="border border-gray-200 text-center py-2 truncate">
+//                         {s.location}
+//                       </td>
+//                       <td className="border border-gray-200 text-center py-2 truncate">
+//                         {s.description || "-"}
+//                       </td>
+//                       <td className="border border-gray-200 text-center py-2">
+//                         {s.requiresFather ? s.fatherName || "-" : "-"}
+//                       </td>
+//                       <td className="border border-gray-200 text-center py-2">
+//                         <div className="flex justify-center gap-2">
+//                           <button
+//                             onClick={() => handleEditClick(s)}
+//                             className="text-yellow-600 hover:scale-110 transition"
+//                             title="Edit Service"
+//                           >
+//                             <FiEdit size={14} />
+//                           </button>
+//                           <button
+//                             onClick={() => handleDelete(s.id)}
+//                             className="text-red-500 hover:scale-110 transition"
+//                             title="Delete Service"
+//                           >
+//                             <FiTrash2 size={14} />
+//                           </button>
+//                         </div>
+//                       </td>
+//                     </tr>
+//                   ))
+//                 )}
+//               </tbody>
+//             </table>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Add Modal */}
+//       <OrderOfServiceAddModal
+//         isOpen={isAddModalOpen}
+//         onClose={() => setIsAddModalOpen(false)}
+//         onSave={handleSaveAdd}
+//       />
+
+//       {/* Edit Modal */}
+//       <OrderOfServiceEditModal
+//         isOpen={isEditModalOpen}
+//         onClose={() => {
+//           setIsEditModalOpen(false);
+//           setEditingService(null);
+//         }}
+//         onSave={handleSaveEdit}
+//         data={editingService}
+//       />
+//     </div>
+//   );
+// }
+
 import { useEffect, useState } from "react";
 import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import OrderOfServiceAddModal from "../OrderOfService/OrderOfServiceAdd"
+import OrderOfServiceAddModal from "../OrderOfService/OrderOfServiceAdd";
 import OrderOfServiceEditModal from "../OrderOfService/OrderOfServiceEdit";
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where } from "firebase/firestore";
+import { db } from "../../../firebase";
 
 export default function OrderOfServiceList() {
   const [currentDate, setCurrentDate] = useState("");
@@ -925,84 +1251,136 @@ export default function OrderOfServiceList() {
   const [selectedDay, setSelectedDay] = useState("");
   const [services, setServices] = useState([]);
   
-  // Modal states
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingService, setEditingService] = useState(null);
 
   useEffect(() => {
-    const loadData = () => {
-      const saved = JSON.parse(localStorage.getItem("services")) || [];
-      setServices(saved);
-    };
-
-    loadData();
-
-    window.addEventListener("focus", loadData);
-
-    return () => window.removeEventListener("focus", loadData);
+    loadAllServices();
   }, []);
+
+  const loadAllServices = async () => {
+    try {
+      const snap = await getDocs(collection(db, "services"));
+      const data = snap.docs.map(doc => {
+        const docData = doc.data();
+        return {
+          firestoreId: doc.id,  // ✅ Store the REAL Firestore document ID
+          ...docData,
+          // Keep the old id field if needed, but don't use it for operations
+        };
+      });
+      console.log("Loaded services:", data);
+      setServices(data);
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to load services");
+    }
+  };
   
-  // 🔥 CURRENT DATE + DAY
+  // CURRENT DATE + DAY
   useEffect(() => {
     const now = new Date();
-
     const date = now.toISOString().split("T")[0];
-
-    const day = now
-      .toLocaleDateString("en-US", { weekday: "long" })
-      .toLowerCase();
-
+    const day = now.toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
     setCurrentDate(date);
     setCurrentDay(day);
-    setSelectedDay(day); // default filter = today
+    setSelectedDay(day);
   }, []);
 
-  // 🔥 FILTER DATA BASED ON SELECTED DAY
-  const filteredServices = services.filter(
-    (s) => s.day === selectedDay
-  );
+  // Get Saturday services (handles 2nd Saturday correctly)
+// Get Saturday services (handles 2nd Saturday correctly)
+const getSaturdayServices = (date) => {
+  const isSecondSat = isSecondSaturday(date);
+  const allSaturdayServices = getServicesForDay("saturday");
+  
+  if (isSecondSat) {
+    // Show ONLY 2nd Saturday services
+    const secondSatServices = allSaturdayServices.filter(s => 
+      s.isSecondSaturday === true
+    );
+    
+    console.log("2nd Saturday services:", secondSatServices);
+    return secondSatServices;
+  } else {
+    // Show ONLY regular Saturday services (not 2nd Saturday)
+    const regularSatServices = allSaturdayServices.filter(s => 
+      !s.isSecondSaturday
+    );
+    
+    console.log("Regular Saturday services:", regularSatServices);
+    return regularSatServices;
+  }
+};
 
-  // 🔹 DELETE
-  const handleDelete = (id) => {
-    const updated = services.filter((s) => s.id !== id);
-    setServices(updated);
-    localStorage.setItem("services", JSON.stringify(updated));
-    toast.error("Service deleted successfully");
+  // FILTER DATA BASED ON SELECTED DAY
+  const filteredServices = services.filter((s) => s.day === selectedDay);
+
+  // DELETE SERVICE
+  const handleDelete = async (firestoreId) => {
+    if (!window.confirm("Are you sure you want to delete this service?")) return;
+
+    try {
+      console.log("Deleting service with Firestore ID:", firestoreId);
+      await deleteDoc(doc(db, "services", firestoreId));
+      toast.success("Deleted successfully");
+      await loadAllServices(); // Refresh the list
+    } catch (error) {
+      console.log("Delete error:", error);
+      toast.error("Delete failed: " + error.message);
+    }
   };
 
-  // 🔹 Open Add Modal
-  const handleAddClick = () => {
-    setIsAddModalOpen(true);
+  // Save New Service
+  const handleSaveAdd = async (newService) => {
+    try {
+      // Remove any old id fields - let Firestore generate its own ID
+      const { id, firestoreId, ...serviceData } = newService;
+      const docRef = await addDoc(collection(db, "services"), serviceData);
+      console.log("Added service with Firestore ID:", docRef.id);
+      toast.success("Service added successfully");
+      setIsAddModalOpen(false);
+      await loadAllServices(); // Refresh the list
+    } catch (error) {
+      console.log("Add error:", error);
+      toast.error("Failed to add service: " + error.message);
+    }
   };
 
-  // 🔹 Save New Service from Modal
-  const handleSaveAdd = (newService) => {
-    const existing = JSON.parse(localStorage.getItem("services")) || [];
-    const updated = [...existing, newService];
-    localStorage.setItem("services", JSON.stringify(updated));
-    setServices(updated);
-    toast.success("Service added successfully");
-    setIsAddModalOpen(false);
-  };
-
-  // 🔹 Open Edit Modal
+  // Open Edit Modal
   const handleEditClick = (service) => {
+    console.log("Editing service:", service);
     setEditingService(service);
     setIsEditModalOpen(true);
   };
 
-  // 🔹 Save Edit from Modal
-  const handleSaveEdit = (updatedService) => {
-    const data = JSON.parse(localStorage.getItem("services")) || [];
-    const updated = data.map((s) =>
-      s.id === updatedService.id ? updatedService : s
-    );
-    localStorage.setItem("services", JSON.stringify(updated));
-    setServices(updated);
-    toast.success("Service updated successfully");
-    setIsEditModalOpen(false);
-    setEditingService(null);
+  // Save Edit
+  const handleSaveEdit = async (updatedService) => {
+    try {
+      // Use the Firestore document ID (not the old numeric id)
+      const firestoreId = updatedService.firestoreId;
+      
+      console.log("Updating service with Firestore ID:", firestoreId);
+      
+      if (!firestoreId) {
+        toast.error("Invalid service ID");
+        return;
+      }
+
+      // Remove the id fields from the update data
+      const { id, firestoreId: removedId, ...updateData } = updatedService;
+      
+      const serviceRef = doc(db, "services", firestoreId);
+      await updateDoc(serviceRef, updateData);
+      
+      toast.success("Updated successfully");
+      setIsEditModalOpen(false);
+      setEditingService(null);
+      await loadAllServices(); // Refresh the list
+    } catch (error) {
+      console.log("Update error:", error);
+      toast.error("Update failed: " + error.message);
+    }
   };
 
   return (
@@ -1010,20 +1388,18 @@ export default function OrderOfServiceList() {
       <ToastContainer position="top-right" autoClose={2000} theme="colored" />
       
       <div className="max-w-8xl mx-auto">
-        {/* 🔥 TOP BAR */}
+        {/* TOP BAR */}
         <div className="bg-white mb-6 py-4 -mt-8">
           <div className="flex flex-wrap justify-between items-center gap-4">
-            {/* LEFT */}
             <div className="flex items-center gap-4 flex-wrap">
               <button
-                onClick={handleAddClick}
-                className="flex items-center gap-2 border border-yellow-500 text-black px-4 py-2 rounded-lg transition-all duration-200  text-sm font-medium"
+                onClick={() => setIsAddModalOpen(true)}
+                className="flex items-center gap-2 border border-yellow-500 text-black px-4 py-2 rounded-lg transition-all duration-200 text-sm font-medium"
               >
                 <FiPlus size={16} />
                 Add New Service
               </button>
 
-              {/* CURRENT DATE + DAY */}
               <div className="flex gap-3 bg-gradient-to-r from-gray-50 to-gray-100 px-4 py-2 rounded-lg border border-gray-200">
                 <div className="text-sm">
                   <span className="font-semibold text-gray-700">📅 Date:</span>
@@ -1037,7 +1413,6 @@ export default function OrderOfServiceList() {
               </div>
             </div>
 
-            {/* RIGHT - DAY FILTER */}
             <div className="flex items-center gap-2">
               <select
                 value={selectedDay}
@@ -1056,11 +1431,10 @@ export default function OrderOfServiceList() {
           </div>
         </div>
 
-        {/* 🔥 TABLE */}
+        {/* TABLE */}
         <div className="bg-white rounded">
           <div className="h-[65vh] overflow-y-auto">
             <table className="w-full text-xs">
-              {/* HEADER */}
               <thead className="sticky top-0 bg-yellow-500 text-white">
                 <tr>
                   <th className="border border-gray-300 px-2 py-3 text-center w-[60px]">NO</th>
@@ -1073,7 +1447,6 @@ export default function OrderOfServiceList() {
                 </tr>
               </thead>
 
-              {/* BODY */}
               <tbody>
                 {filteredServices.length === 0 ? (
                   <tr>
@@ -1083,25 +1456,13 @@ export default function OrderOfServiceList() {
                   </tr>
                 ) : (
                   filteredServices.map((s, i) => (
-                    <tr key={s.id} className="hover:bg-gray-50">
-                      <td className="border border-gray-200 text-center py-3">
-                        {i + 1}
-                      </td>
-                      <td className="border border-gray-200 text-center py-2 truncate">
-                        {s.name}
-                      </td>
-                      <td className="border border-gray-200 text-center py-2">
-                        {s.time}
-                      </td>
-                      <td className="border border-gray-200 text-center py-2 truncate">
-                        {s.location}
-                      </td>
-                      <td className="border border-gray-200 text-center py-2 truncate">
-                        {s.description || "-"}
-                      </td>
-                      <td className="border border-gray-200 text-center py-2">
-                        {s.requiresFather ? s.fatherName || "-" : "-"}
-                      </td>
+                    <tr key={s.firestoreId} className="hover:bg-gray-50">
+                      <td className="border border-gray-200 text-center py-3">{i + 1}</td>
+                      <td className="border border-gray-200 text-center py-2 truncate">{s.name}</td>
+                      <td className="border border-gray-200 text-center py-2">{s.time}</td>
+                      <td className="border border-gray-200 text-center py-2 truncate">{s.location}</td>
+                      <td className="border border-gray-200 text-center py-2 truncate">{s.description || "-"}</td>
+                      <td className="border border-gray-200 text-center py-2">{s.requiresFather ? s.fatherName || "-" : "-"}</td>
                       <td className="border border-gray-200 text-center py-2">
                         <div className="flex justify-center gap-2">
                           <button
@@ -1112,7 +1473,7 @@ export default function OrderOfServiceList() {
                             <FiEdit size={14} />
                           </button>
                           <button
-                            onClick={() => handleDelete(s.id)}
+                            onClick={() => handleDelete(s.firestoreId)}  // ✅ Use firestoreId
                             className="text-red-500 hover:scale-110 transition"
                             title="Delete Service"
                           >
@@ -1129,14 +1490,12 @@ export default function OrderOfServiceList() {
         </div>
       </div>
 
-      {/* Add Modal */}
       <OrderOfServiceAddModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSave={handleSaveAdd}
       />
 
-      {/* Edit Modal */}
       <OrderOfServiceEditModal
         isOpen={isEditModalOpen}
         onClose={() => {

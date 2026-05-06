@@ -2614,37 +2614,388 @@
 // };
 
 // export default SponsorPayment;
+// import React, { useState, useRef } from "react";
+// import logo from "../../assets/images/logo.jpg";
+// import { QRCodeCanvas } from "qrcode.react";
+// import { ToastContainer, toast } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+
+// const SponsorPayment = () => {
+//   const [formData, setFormData] = useState({
+//     name: "",
+//     reason: "",
+//     amount: "",
+//     upiId: "",
+//   });
+//   const [showTooltip, setShowTooltip] = useState(false);
+//   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+//   const [isSubmitting, setIsSubmitting] = useState(false);
+//   const buttonRef = useRef(null);
+
+//   // Check if form is filled (Name, Reason, Amount)
+//   const isFormFilled = formData.name.trim() !== "" && 
+//     formData.reason.trim() !== "" &&
+//     formData.amount.trim() !== "";
+
+//   // Check if UPI ID is filled
+//   const isUpiFilled = formData.upiId.trim() !== "";
+
+//   // Check if submit button should be enabled (only needs form filled + UPI ID)
+//   const isSubmitEnabled = isFormFilled && isUpiFilled && !isSubmitting;
+
+//   // Generate UPI URL for QR code
+//   const upiUrl = `upi://pay?pa=anniean394@okaxis&pn=Church%20Donation&am=${formData.amount}&cu=INR&tn=${encodeURIComponent(formData.name)}`;
+
+//   // Handle input changes
+//   const handleChange = (e) => {
+//     setFormData({
+//       ...formData,
+//       [e.target.name]: e.target.value,
+//     });
+//   };
+
+//   // Handle Scan Payment - Opens GPay/UPI Apps
+//   const handleScanPayment = () => {
+//     if (!isFormFilled) {
+//       toast.warning("⚠️ Please fill Name, Reason, and Amount first!");
+//       return;
+//     }
+
+//     const payeeName = "Church Donation";
+//     const amount = formData.amount;
+//     const note = `Sponsorship Donation - ${formData.name}`;
+    
+//     const upiUrl = `upi://pay?pa=anniean394@okaxis&pn=${encodeURIComponent(payeeName)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
+    
+//     window.location.href = upiUrl;
+//   };
+
+//   const copyUpiId = () => {
+//     navigator.clipboard.writeText("anniean394@okaxis");
+//     toast.info("Church UPI ID copied! Open your UPI app and paste to pay.");
+//   };
+
+//   const handleMouseMove = (e) => {
+//     if (!isSubmitEnabled) {
+//       setTooltipPosition({
+//         x: e.clientX + 15,
+//         y: e.clientY - 30,
+//       });
+//     }
+//   };
+
+//   const handleFinalSubmit = () => {
+//     if (!isFormFilled) {
+//       toast.warning("⚠️ Please fill your Name, Reason, and Amount first!");
+//       return;
+//     }
+    
+//     if (!isUpiFilled) {
+//       toast.warning("⚠️ Please enter your UPI ID!");
+//       return;
+//     }
+    
+//     setIsSubmitting(true);
+    
+//     // Show success toast with name and Bible verse
+//     // toast.success(`🙏 Thank you ${formData.name} for your ₹${formData.amount} sponsorship!`, {
+//     //   position: "top-right",
+//     //   autoClose: 5000,
+//     //   icon: "🎉",
+//     // });
+    
+//     // toast.info(`📖 "God loves a cheerful giver" - 2 Corinthians 9:7`, {
+//     //   position: "top-right",
+//     //   autoClose: 6000,
+//     //   icon: "✝️",
+//     // });
+
+// //     toast.success(
+// //   `🙏 Thank you ${formData.name} for your sponsorship!\n📖 
+// //    "God loves a cheerful giver" - 2 Corinthians 9:7`,
+// //   {
+// //     position: "top-right",
+// //     autoClose: 6000,
+// //     icon: "🎉",
+// //   }
+// // );
+// toast.success(
+//   `🙏 Thank you for your sponsorship!\n📖 "God loves a cheerful giver" - 2 Corinthians 9:7`,
+//   {
+//     position: "top-right",
+//     autoClose: 6000,
+//     icon: "🎉",
+//     style: {
+//       width: "420px",
+//       maxWidth: "90vw",
+//       whiteSpace: "pre-line",
+//     },
+//   }
+// );
+    
+//     // Reset form after 5 seconds
+//     setTimeout(() => {
+//       setFormData({ name: "", reason: "", amount: "", upiId: "" });
+//       setIsSubmitting(false);
+//     }, 5000);
+//   };
+
+//   const getButtonTooltipMessage = () => {
+//     if (!isFormFilled) return "⚠️ Please fill Name, Reason, and Amount first";
+//     if (!isUpiFilled) return "⚠️ Please enter your UPI ID";
+//     return "✅ Click to submit payment";
+//   };
+
+//   return (
+//     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-black px-4 py-6">
+//       <ToastContainer position="top-right" autoClose={3000} theme="colored" />
+     
+//       {/* Single Card Container */}
+//       <div className="max-w-4xl mt-15 w-full">
+//         <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 overflow-hidden">
+//           {/* Split into two halves */}
+//           <div className="flex flex-col md:flex-row">
+            
+//             {/* Left Side - Form Section */}
+//             <div className="md:w-3/5 p-6">
+//               {/* Logo */}
+//               <div className="flex justify-center mb-4">
+//                 <img src={logo} alt="Church Logo" className="w-12 h-12 rounded-full" />
+//               </div>
+
+//               {/* Title */}
+//               <h2 className="text-xl font-bold text-center text-white mb-1">
+//                 Sponsor Payment
+//               </h2>
+//               <p className="text-center text-gray-300 mb-4 text-xs">
+//                 Support the mission and make a difference
+//               </p>
+
+//               {/* Form */}
+//               <div className="space-y-4">
+//                 <div>
+//                   <input
+//                     type="text"
+//                     name="name"
+//                     value={formData.name}
+//                     onChange={handleChange}
+//                     placeholder="Your Full Name *"
+//                     required
+//                     className="w-full py-2.5 px-3 rounded-md bg-white/20 text-white placeholder-gray-300 outline-none focus:ring-2 focus:ring-red-500 text-sm"
+//                   />
+//                 </div>
+                
+//                 <div>
+//                   <input
+//                     type="text"
+//                     name="reason"
+//                     value={formData.reason}
+//                     onChange={handleChange}
+//                     placeholder="Reason for Sponsorship *"
+//                     required
+//                     className="w-full py-2.5 px-3 rounded-md bg-white/20 text-white placeholder-gray-300 outline-none focus:ring-2 focus:ring-red-500 text-sm"
+//                   />
+//                 </div>
+
+//                 <div>
+//                   <input
+//                     type="number"
+//                     name="amount"
+//                     value={formData.amount}
+//                     onChange={handleChange}
+//                     placeholder="Sponsor Amount (₹) *"
+//                     required
+//                     className="w-full py-2.5 px-3 rounded-md bg-white/20 text-white placeholder-gray-300 outline-none focus:ring-2 focus:ring-red-500 text-sm"
+//                   />
+//                 </div>
+
+//                 <div>
+//   <input
+//     type="text"
+//     name="upiId"
+//     value={formData.upiId}
+//     onChange={handleChange}
+//     placeholder="Your UPI ID (e.g., name@okhdfcbank) *"
+//     required
+//     className="w-full py-2.5 px-3 rounded-md bg-white/20 text-white placeholder-gray-300 outline-none focus:ring-2 focus:ring-red-500 text-sm"
+//   />
+
+//   {/* ✅ ADD THIS MESSAGE ONLY */}
+//   {isFormFilled && (
+//     <p className="text-yellow-400 text-xs mt-1">
+//       ⚠️ First scan to pay, then enter your UPI ID
+//     </p>
+//   )}
+
+//   {/* {isUpiFilled && (
+//     <p className="text-green-400 text-xs mt-1">
+//       ✓ UPI ID added! Ready to submit
+//     </p>
+//   )} */}
+// </div>
+
+//                 {/* Progress indicator */}
+//                 <div className="mt-3 pt-2 border-t border-white/20">
+//                   <p className="text-gray-400 text-xs mb-2">Payment Status:</p>
+
+//                   <div className="flex items-center gap-2">
+//                     <div className={`w-2 h-2 rounded-full ${isFormFilled ? 'bg-green-500' : 'bg-gray-500'}`}></div>
+//                     <span className="text-xs text-gray-300">Step 1: Fill Details (Name, Reason, Amount)</span>
+//                   </div>
+
+//                   <div className="flex items-center gap-2 mt-1">
+//                     <div className={`w-2 h-2 rounded-full ${isUpiFilled ? 'bg-green-500' : 'bg-gray-500'}`}></div>
+//                     <span className="text-xs text-gray-300">Step 2: Enter UPI ID & Submit</span>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+
+//             {/* Right Side - Scanner Section */}
+//             <div className="md:w-2/5 bg-white/5 p-6 flex flex-col items-center justify-center border-t md:border-t-0 md:border-l border-white/10">
+//               <div className="text-center mb-3">
+//                 <h3 className="text-lg font-bold text-white mb-1">Scan to Pay</h3>
+//                 <p className="text-gray-300 text-xs">Quick & Easy UPI Payment</p>
+//               </div>
+
+//               {/* QR Code */}
+//               <div
+//                 onClick={handleScanPayment}
+//                 className={`cursor-pointer transition-transform hover:scale-105 ${
+//                   !isFormFilled ? "opacity-50 pointer-events-none" : ""
+//                 }`}
+//               >
+//                 <div className="w-32 h-32 md:w-36 md:h-36 bg-white rounded-xl flex flex-col items-center justify-center shadow-lg overflow-hidden p-2">
+//                   {isFormFilled ? (
+//                     <QRCodeCanvas value={upiUrl} size={130} />
+//                   ) : (
+//                     <div className="text-gray-400 text-xs text-center">Fill details to generate QR</div>
+//                   )}
+//                 </div>
+//               </div>
+
+//               {!isFormFilled && (
+//                 <p className="text-yellow-400 text-xs mt-2 text-center">
+//                   Fill Name, Reason & Amount to enable payment
+//                 </p>
+//               )}
+
+//               {/* Scan & Pay Text */}
+//               <div 
+//                 onClick={handleScanPayment}
+//                 className={`mt-3 text-center cursor-pointer group ${!isFormFilled ? 'opacity-50 pointer-events-none' : ''}`}
+//               >
+//                 <p className="text-white font-semibold text-sm group-hover:text-red-400 transition">
+//                   📱 Scan & Pay
+//                 </p>
+//                 <p className="text-gray-400 text-xs mt-1">
+//                   Scan with GPay, PhonePe, Paytm
+//                 </p>
+//               </div>
+
+//               {/* Church UPI ID Display */}
+//               <div className="mt-2 text-center">
+//                 <p className="text-gray-500 text-xs">Church UPI: anniean394@okaxis</p>
+//                 <button
+//                   onClick={copyUpiId}
+//                   className="text-blue-400 hover:text-blue-300 text-xs mt-1 underline"
+//                 >
+//                   📋 Copy Church UPI ID
+//                 </button>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Submit Button */}
+//         <div className="mt-10 relative flex justify-center" ref={buttonRef}>
+//           <div
+//             onMouseMove={handleMouseMove}
+//             onMouseEnter={() => setShowTooltip(true)}
+//             onMouseLeave={() => setShowTooltip(false)}
+//             className="w-full max-w-sm"
+//           >
+//             <button
+//               onClick={handleFinalSubmit}
+//               disabled={!isSubmitEnabled}
+//               className={`w-full font-bold py-3 rounded-full shadow-lg transition-all duration-300 text-sm ${
+//                 isSubmitEnabled 
+//                   ? "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white transform hover:scale-105 cursor-pointer" 
+//                   : "bg-gray-600 cursor-not-allowed opacity-60"
+//               }`}
+//             >
+//               {isSubmitting ? "⏳ Processing..." : "✅ Submit Payment"}
+//             </button>
+//           </div>
+
+//           {/* Custom Tooltip - Only shows when button is disabled */}
+//           {showTooltip && !isSubmitEnabled && !isSubmitting && (
+//             <div 
+//               className="fixed z-50 bg-black/90 text-white text-xs px-3 py-2 rounded-lg shadow-xl pointer-events-none whitespace-nowrap border border-red-500/50"
+//               style={{
+//                 left: tooltipPosition.x,
+//                 top: tooltipPosition.y,
+//                 transform: 'translateX(-50%)'
+//               }}
+//             >
+//               <div className="flex items-center gap-2">
+//                 <span>⚠️</span>
+//                 <span>{getButtonTooltipMessage()}</span>
+//               </div>
+//               <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
+//                 <div className="border-8 border-transparent border-t-black/90"></div>
+//               </div>
+//             </div>
+//           )}
+//         </div>
+//       </div>
+
+     
+//     </div>
+//   );
+// };
+
+// export default SponsorPayment;
+
 import React, { useState, useRef } from "react";
 import logo from "../../assets/images/logo.jpg";
 import { QRCodeCanvas } from "qrcode.react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { db } from "../../firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 const SponsorPayment = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     reason: "",
     amount: "",
     upiId: "",
   });
-  const [showTooltip, setShowTooltip] = useState(false);
-  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const [screenshot, setScreenshot] = useState(null);
+  const [screenshotPreview, setScreenshotPreview] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const buttonRef = useRef(null);
+  const [showProcessing, setShowProcessing] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const fileInputRef = useRef(null);
 
-  // Check if form is filled (Name, Reason, Amount)
+  // Cloudinary configuration
+  const CLOUD_NAME = "ddqklsfmc";
+  const UPLOAD_PRESET = "sponsor_upload";
+
+  // Check if form is filled
   const isFormFilled = formData.name.trim() !== "" && 
     formData.reason.trim() !== "" &&
     formData.amount.trim() !== "";
 
-  // Check if UPI ID is filled
+  // Check if UPI ID and screenshot are filled
   const isUpiFilled = formData.upiId.trim() !== "";
+  const isScreenshotUploaded = screenshot !== null;
 
-  // Check if submit button should be enabled (only needs form filled + UPI ID)
-  const isSubmitEnabled = isFormFilled && isUpiFilled && !isSubmitting;
-
-  // Generate UPI URL for QR code
-  const upiUrl = `upi://pay?pa=anniean394@okaxis&pn=Church%20Donation&am=${formData.amount}&cu=INR&tn=${encodeURIComponent(formData.name)}`;
+  // Check if submit button should be enabled
+  const isSubmitEnabled = isFormFilled && isUpiFilled && isScreenshotUploaded && !isSubmitting;
 
   // Handle input changes
   const handleChange = (e) => {
@@ -2654,7 +3005,120 @@ const SponsorPayment = () => {
     });
   };
 
-  // Handle Scan Payment - Opens GPay/UPI Apps
+  // Compress image before upload
+  const compressImage = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          let width = img.width;
+          let height = img.height;
+          const maxWidth = 800;
+          const maxHeight = 800;
+          
+          if (width > height) {
+            if (width > maxWidth) {
+              height = (height * maxWidth) / width;
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = (width * maxHeight) / height;
+              height = maxHeight;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          canvas.toBlob((blob) => {
+            const compressedFile = new File([blob], file.name, {
+              type: 'image/jpeg',
+              lastModified: Date.now()
+            });
+            resolve(compressedFile);
+          }, 'image/jpeg', 0.7);
+        };
+        img.onerror = reject;
+      };
+      reader.onerror = reject;
+    });
+  };
+
+  // Upload to Cloudinary
+  const uploadToCloudinary = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET);
+    
+    try {
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error?.message || "Upload failed");
+      }
+      
+      return data.secure_url;
+    } catch (error) {
+      console.error("Cloudinary upload error:", error);
+      throw error;
+    }
+  };
+
+  // Handle screenshot upload
+  const handleScreenshotUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error("Please upload an image file (JPEG, PNG)");
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("File too large. Please upload image under 2MB");
+      return;
+    }
+
+    setUploadProgress(10);
+    
+    try {
+      const compressedFile = await compressImage(file);
+      setUploadProgress(30);
+      setScreenshotPreview(URL.createObjectURL(compressedFile));
+      setUploadProgress(50);
+      
+      const imageUrl = await uploadToCloudinary(compressedFile);
+      setUploadProgress(100);
+      
+      setScreenshot(imageUrl);
+      toast.success("Screenshot uploaded successfully!");
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload screenshot. Please try again.");
+      setScreenshotPreview(null);
+      setScreenshot(null);
+    } finally {
+      setTimeout(() => setUploadProgress(0), 1000);
+    }
+  };
+
+  // Handle Scan Payment
   const handleScanPayment = () => {
     if (!isFormFilled) {
       toast.warning("⚠️ Please fill Name, Reason, and Amount first!");
@@ -2675,16 +3139,23 @@ const SponsorPayment = () => {
     toast.info("Church UPI ID copied! Open your UPI app and paste to pay.");
   };
 
-  const handleMouseMove = (e) => {
-    if (!isSubmitEnabled) {
-      setTooltipPosition({
-        x: e.clientX + 15,
-        y: e.clientY - 30,
-      });
+  // Reset form function
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      reason: "",
+      amount: "",
+      upiId: "",
+    });
+    setScreenshot(null);
+    setScreenshotPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
-  const handleFinalSubmit = () => {
+  // Final Submit - Save to Firestore and clear form (no navigation)
+  const handleFinalSubmit = async () => {
     if (!isFormFilled) {
       toast.warning("⚠️ Please fill your Name, Reason, and Amount first!");
       return;
@@ -2694,61 +3165,82 @@ const SponsorPayment = () => {
       toast.warning("⚠️ Please enter your UPI ID!");
       return;
     }
+
+    if (!isScreenshotUploaded) {
+      toast.warning("⚠️ Please upload payment screenshot!");
+      return;
+    }
     
     setIsSubmitting(true);
+    setShowProcessing(true);
     
-    // Show success toast with name and Bible verse
-    // toast.success(`🙏 Thank you ${formData.name} for your ₹${formData.amount} sponsorship!`, {
-    //   position: "top-right",
-    //   autoClose: 5000,
-    //   icon: "🎉",
-    // });
-    
-    // toast.info(`📖 "God loves a cheerful giver" - 2 Corinthians 9:7`, {
-    //   position: "top-right",
-    //   autoClose: 6000,
-    //   icon: "✝️",
-    // });
-
-//     toast.success(
-//   `🙏 Thank you ${formData.name} for your sponsorship!\n📖 
-//    "God loves a cheerful giver" - 2 Corinthians 9:7`,
-//   {
-//     position: "top-right",
-//     autoClose: 6000,
-//     icon: "🎉",
-//   }
-// );
-toast.success(
-  `🙏 Thank you for your sponsorship!\n📖 "God loves a cheerful giver" - 2 Corinthians 9:7`,
-  {
-    position: "top-right",
-    autoClose: 6000,
-    icon: "🎉",
-    style: {
-      width: "420px",
-      maxWidth: "90vw",
-      whiteSpace: "pre-line",
-    },
-  }
-);
-    
-    // Reset form after 5 seconds
-    setTimeout(() => {
-      setFormData({ name: "", reason: "", amount: "", upiId: "" });
+    try {
+      // Save sponsor data to Firestore
+      await addDoc(collection(db, "sponsors"), {
+        name: formData.name,
+        reason: formData.reason,
+        amount: parseInt(formData.amount),
+        upiId: formData.upiId,
+        screenshot: screenshot,
+        date: new Date().toISOString().split("T")[0],
+        createdAt: serverTimestamp(),
+        status: "pending"
+      });
+      
+      // Show processing for 3 seconds
+      setTimeout(() => {
+        setShowProcessing(false);
+        setIsSubmitting(false);
+        
+        // Show success toast
+        toast.success(
+          `🙏 Thank you for your sponsorship 📖 "God loves a cheerful giver" - 2 Corinthians 9:7`,
+          {
+            position: "top-right",
+            autoClose: 5000,
+            icon: "🎉",
+            style: {
+              width: "420px",
+              maxWidth: "90vw",
+              whiteSpace: "pre-line",
+              backgroundColor: "#10B981",
+              color: "white",
+            },
+          }
+        );
+        
+        // Clear the form after successful submission
+        resetForm();
+        
+      }, 3000);
+      
+    } catch (error) {
+      console.error("Error submitting sponsor:", error);
+      setShowProcessing(false);
+      toast.error("Failed to submit. Please try again.");
       setIsSubmitting(false);
-    }, 5000);
-  };
-
-  const getButtonTooltipMessage = () => {
-    if (!isFormFilled) return "⚠️ Please fill Name, Reason, and Amount first";
-    if (!isUpiFilled) return "⚠️ Please enter your UPI ID";
-    return "✅ Click to submit payment";
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-black px-4 py-6">
       <ToastContainer position="top-right" autoClose={3000} theme="colored" />
+     
+      {/* Processing Modal */}
+      {showProcessing && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-8 text-center max-w-sm mx-4">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-yellow-500 mx-auto mb-4"></div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">Processing Payment</h3>
+            <p className="text-gray-600 text-sm">
+              Please wait while we verify your payment...
+            </p>
+            <p className="text-gray-400 text-xs mt-3">
+              Do not close this window
+            </p>
+          </div>
+        </div>
+      )}
      
       {/* Single Card Container */}
       <div className="max-w-4xl mt-15 w-full">
@@ -2759,17 +3251,17 @@ toast.success(
             {/* Left Side - Form Section */}
             <div className="md:w-3/5 p-6">
               {/* Logo */}
-              <div className="flex justify-center mb-4">
+              {/* <div className="flex justify-center mb-4">
                 <img src={logo} alt="Church Logo" className="w-12 h-12 rounded-full" />
-              </div>
+              </div> */}
 
               {/* Title */}
-              <h2 className="text-xl font-bold text-center text-white mb-1">
+              <h2 className="text-xl font-bold text-center text-white mb-2">
                 Sponsor Payment
               </h2>
-              <p className="text-center text-gray-300 mb-4 text-xs">
+              {/* <p className="text-center text-gray-300 mb-4 text-xs">
                 Support the mission and make a difference
-              </p>
+              </p> */}
 
               {/* Form */}
               <div className="space-y-4">
@@ -2810,28 +3302,111 @@ toast.success(
                 </div>
 
                 <div>
-  <input
-    type="text"
-    name="upiId"
-    value={formData.upiId}
-    onChange={handleChange}
-    placeholder="Your UPI ID (e.g., name@okhdfcbank) *"
-    required
-    className="w-full py-2.5 px-3 rounded-md bg-white/20 text-white placeholder-gray-300 outline-none focus:ring-2 focus:ring-red-500 text-sm"
-  />
+                  <input
+                    type="text"
+                    name="upiId"
+                    value={formData.upiId}
+                    onChange={handleChange}
+                    placeholder="Your UPI ID (e.g., name@okhdfcbank) *"
+                    required
+                    className="w-full py-2.5 px-3 rounded-md bg-white/20 text-white placeholder-gray-300 outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                  />
+                  {isFormFilled && (
+                    <p className="text-yellow-400 text-xs mt-1">
+                      ⚠️ First scan to pay, then upload screenshot
+                    </p>
+                  )}
+                </div>
 
-  {/* ✅ ADD THIS MESSAGE ONLY */}
-  {isFormFilled && (
-    <p className="text-yellow-400 text-xs mt-1">
-      ⚠️ First scan to pay, then enter your UPI ID
-    </p>
+                {/* Screenshot Upload */}
+                {/* <div>
+                  <label className="block text-gray-300 text-xs mb-1">
+                    Payment Screenshot * 
+                    <span className="text-red-400 ml-1">(Required)</span>
+                  </label>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept="image/*"
+                    onChange={handleScreenshotUpload}
+                    className="w-full py-2 px-3 rounded-md bg-white/20 text-white placeholder-gray-300 outline-none focus:ring-2 focus:ring-red-500 text-sm file:mr-2 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-sm file:bg-red-500 file:text-white hover:file:bg-red-600"
+                  />
+                  {uploadProgress > 0 && uploadProgress < 100 && (
+                    <div className="mt-2">
+                      <div className="w-full bg-gray-700 rounded-full h-1.5">
+                        <div 
+                          className="bg-yellow-500 h-1.5 rounded-full transition-all duration-300"
+                          style={{ width: `${uploadProgress}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-gray-400 text-xs mt-1">Uploading... {uploadProgress}%</p>
+                    </div>
+                  )}
+                  {screenshotPreview && (
+                    <div className="mt-2">
+                      <img src={screenshotPreview} alt="Screenshot Preview" className="w-20 h-20 object-cover rounded-lg border border-yellow-500" />
+                    </div>
+                  )}
+                  <p className="text-gray-400 text-[10px] mt-1">
+                    Upload screenshot of payment from your UPI app (Max 2MB)
+                  </p>
+                </div> */}
+                <div>
+  <label className="block text-gray-300 text-xs mb-1">
+    Payment Screenshot * 
+    <span className="text-red-400 ml-1">(Required)</span>
+  </label>
+  
+  <div className="flex items-center gap-3">
+    <label className="cursor-pointer">
+      <input
+        type="file"
+        ref={fileInputRef}
+        accept="image/*"
+        onChange={handleScreenshotUpload}
+        className="hidden"
+      />
+      <div className="py-2 px-4 rounded-md bg-red-500 hover:bg-red-600 text-white text-sm font-medium transition-colors cursor-pointer">
+        Choose File
+      </div>
+    </label>
+    
+    {screenshot ? (
+      <div className="flex items-center gap-2">
+        <span className="text-gray-300 text-xs truncate max-w-[200px]">
+          {screenshot.name || "Image selected"}
+        </span>
+        <button
+          onClick={() => {
+            setScreenshot(null);
+            setScreenshotPreview(null);
+            if (fileInputRef.current) fileInputRef.current.value = "";
+          }}
+          className="text-red-400 hover:text-red-300 text-xs"
+        >
+          ✕ Remove
+        </button>
+      </div>
+    ) : (
+      <span className="text-gray-500 text-xs">No file chosen</span>
+    )}
+  </div>
+
+  {uploadProgress > 0 && uploadProgress < 100 && (
+    <div className="mt-2">
+      <div className="w-full bg-gray-700 rounded-full h-1.5">
+        <div 
+          className="bg-yellow-500 h-1.5 rounded-full transition-all duration-300"
+          style={{ width: `${uploadProgress}%` }}
+        ></div>
+      </div>
+      <p className="text-gray-400 text-xs mt-1">Uploading... {uploadProgress}%</p>
+    </div>
   )}
-
-  {/* {isUpiFilled && (
-    <p className="text-green-400 text-xs mt-1">
-      ✓ UPI ID added! Ready to submit
-    </p>
-  )} */}
+  
+  <p className="text-gray-400 text-[10px] mt-1">
+    Upload screenshot of payment from your UPI app (Max 2MB)
+  </p>
 </div>
 
                 {/* Progress indicator */}
@@ -2845,7 +3420,12 @@ toast.success(
 
                   <div className="flex items-center gap-2 mt-1">
                     <div className={`w-2 h-2 rounded-full ${isUpiFilled ? 'bg-green-500' : 'bg-gray-500'}`}></div>
-                    <span className="text-xs text-gray-300">Step 2: Enter UPI ID & Submit</span>
+                    <span className="text-xs text-gray-300">Step 2: Enter UPI ID</span>
+                  </div>
+
+                  <div className="flex items-center gap-2 mt-1">
+                    <div className={`w-2 h-2 rounded-full ${isScreenshotUploaded ? 'bg-green-500' : 'bg-gray-500'}`}></div>
+                    <span className="text-xs text-gray-300">Step 3: Upload Payment Screenshot</span>
                   </div>
                 </div>
               </div>
@@ -2867,7 +3447,7 @@ toast.success(
               >
                 <div className="w-32 h-32 md:w-36 md:h-36 bg-white rounded-xl flex flex-col items-center justify-center shadow-lg overflow-hidden p-2">
                   {isFormFilled ? (
-                    <QRCodeCanvas value={upiUrl} size={130} />
+                    <QRCodeCanvas value={`upi://pay?pa=anniean394@okaxis&pn=Church%20Donation&am=${formData.amount}&cu=INR`} size={130} />
                   ) : (
                     <div className="text-gray-400 text-xs text-center">Fill details to generate QR</div>
                   )}
@@ -2908,13 +3488,8 @@ toast.success(
         </div>
 
         {/* Submit Button */}
-        <div className="mt-10 relative flex justify-center" ref={buttonRef}>
-          <div
-            onMouseMove={handleMouseMove}
-            onMouseEnter={() => setShowTooltip(true)}
-            onMouseLeave={() => setShowTooltip(false)}
-            className="w-full max-w-sm"
-          >
+        <div className="mt-10 relative flex justify-center">
+          <div className="w-full max-w-sm">
             <button
               onClick={handleFinalSubmit}
               disabled={!isSubmitEnabled}
@@ -2927,30 +3502,8 @@ toast.success(
               {isSubmitting ? "⏳ Processing..." : "✅ Submit Payment"}
             </button>
           </div>
-
-          {/* Custom Tooltip - Only shows when button is disabled */}
-          {showTooltip && !isSubmitEnabled && !isSubmitting && (
-            <div 
-              className="fixed z-50 bg-black/90 text-white text-xs px-3 py-2 rounded-lg shadow-xl pointer-events-none whitespace-nowrap border border-red-500/50"
-              style={{
-                left: tooltipPosition.x,
-                top: tooltipPosition.y,
-                transform: 'translateX(-50%)'
-              }}
-            >
-              <div className="flex items-center gap-2">
-                <span>⚠️</span>
-                <span>{getButtonTooltipMessage()}</span>
-              </div>
-              <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
-                <div className="border-8 border-transparent border-t-black/90"></div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
-
-     
     </div>
   );
 };

@@ -1968,6 +1968,829 @@
 //   );
 // }
 
+// import { useState, useEffect } from "react";
+// import { Plus, Edit2, Trash2, Eye, Search, X, Calendar, Tag, FileText, Star } from "lucide-react";
+// import { FiEdit, FiTrash2, FiEye } from "react-icons/fi";
+// import { toast, ToastContainer } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+// import EventAddModal from "../EventPage/EventAdd";
+// import EventEditModal from "../EventPage/EventEdit";
+//  import { collection, getDocs } from "firebase/firestore";
+// import { db } from "../../../firebase";
+// import { addDoc } from "firebase/firestore";
+// import { deleteDoc, doc } from "firebase/firestore";
+
+// export default function EventList() {
+//   const [events, setEvents] = useState([]);
+//   const [filteredEvents, setFilteredEvents] = useState([]);
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+//   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+//   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+//   const [selectedEvent, setSelectedEvent] = useState(null);
+
+// const [categories, setCategories] = useState([]);
+
+// useEffect(() => {
+//   loadCategories();
+// }, []);
+
+// useEffect(() => {
+//   loadEvents();
+// }, []);
+
+
+
+//   // LOAD EVENTS - Only from admin added data
+//  const loadCategories = async () => {
+//   try {
+//     const snap = await getDocs(collection(db, "eventCategories"));
+
+//     const data = snap.docs.map(doc => ({
+//       id: doc.id,
+//       ...doc.data()
+//     }));
+
+//     setCategories(data);
+
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+ 
+ 
+
+//   // const loadEvents = () => {
+//   //   // Only get events from localStorage (admin added data)
+//   //   const data = JSON.parse(localStorage.getItem("adminEvents")) || [];
+//   //   setEvents(data);
+//   //   setFilteredEvents(data);
+//   // };
+
+//   // SEARCH
+//   const loadEvents = async () => {
+//   const snap = await getDocs(collection(db, "events"));
+
+//   const data = snap.docs.map(doc => ({
+//     id: doc.id,
+//     ...doc.data()
+//   }));
+
+//   setEvents(data);
+//   setFilteredEvents(data);
+// };
+  
+//   useEffect(() => {
+//     if (searchTerm === "") {
+//       setFilteredEvents(events);
+//     } else {
+//       const filtered = events.filter(event =>
+//         event.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//         event.section?.toLowerCase().includes(searchTerm.toLowerCase())
+//       );
+//       setFilteredEvents(filtered);
+//     }
+//   }, [searchTerm, events]);
+
+//   // DELETE EVENT
+//   // const handleDelete = (id) => {
+//   //   if (window.confirm("Are you sure you want to delete this event?")) {
+//   //     const updated = events.filter(event => event.id !== id);
+//   //     localStorage.setItem("adminEvents", JSON.stringify(updated));
+//   //     setEvents(updated);
+//   //     toast.error("Event deleted successfully");
+//   //   }
+//   // };
+//   const handleDelete = async (event) => {
+//   try {
+//    await deleteDoc(doc(db, "events", String(event.id)));
+
+//     toast.error("Event deleted successfully");
+
+//     await loadEvents(); // 🔥 refresh table
+
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
+//   // OPEN MODALS
+//   const openAddModal = () => {
+//     setIsAddModalOpen(true);
+//   };
+
+//   const openEditModal = (event) => {
+//     setSelectedEvent(event);
+//     setIsEditModalOpen(true);
+//   };
+
+//   const openViewModal = (event) => {
+//     setSelectedEvent(event);
+//     setIsViewModalOpen(true);
+//   };
+
+//   // HANDLE SAVE FROM ADD MODAL
+//   // const handleSaveAdd = (newEvent) => {
+//   //   const existing = JSON.parse(localStorage.getItem("adminEvents")) || [];
+//   //   const updated = [...existing, newEvent];
+//   //   localStorage.setItem("adminEvents", JSON.stringify(updated));
+//   //   setEvents(updated);
+//   //   toast.success("Event added successfully");
+//   //   setIsAddModalOpen(false);
+//   // };
+// //   const handleSaveAdd = async (newEvent) => {
+// //   try {
+// //     await addDoc(collection(db, "events"), newEvent);
+
+// //     toast.success("Event added successfully");
+
+// //     loadEvents();
+// //     setIsAddModalOpen(false);
+
+// //   } catch (error) {
+// //     console.log(error);
+// //   }
+// // };
+// const handleSaveAdd = async (newEvent) => {
+//   try {
+//     await addDoc(collection(db, "events"), newEvent);
+
+//     toast.success("Event added successfully");
+
+//     await loadEvents();   // 🔥 IMPORTANT
+
+//     setIsAddModalOpen(false); // close modal
+
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
+//   // HANDLE SAVE FROM EDIT MODAL
+//   const handleSaveEdit = (updatedEvent) => {
+//     const data = JSON.parse(localStorage.getItem("adminEvents")) || [];
+//     const updated = data.map(event =>
+//       event.id === updatedEvent.id ? updatedEvent : event
+//     );
+//     localStorage.setItem("adminEvents", JSON.stringify(updated));
+//     setEvents(updated);
+//     toast.success("Event updated successfully");
+//     setIsEditModalOpen(false);
+//     setSelectedEvent(null);
+//   };
+
+//   return (
+//     <div className="min-h-screen py-2 ">
+//       <ToastContainer position="top-right" autoClose={2000} theme="colored" />
+
+//       <div className="max-w-8xl mx-auto">
+//         {/* TOP BAR */}
+//         <div className="bg-white mb-5  ">
+//           <div className="flex flex-wrap justify-between items-center gap-4">
+//             <button
+//               onClick={openAddModal}
+//               className="flex items-center gap-2 bg-yellow-500 text-white px-5 py-2 rounded-lg hover:bg-yellow-600 transition-all duration-200 shadow-md"
+//             >
+//               <Plus size={18} />
+//               Add New Event
+//             </button>
+
+//             <div className="flex-1 max-w-xs">
+//               <div className="relative">
+//                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+//                 <input
+//                   type="text"
+//                   placeholder="Search events by section..."
+//                   value={searchTerm}
+//                   onChange={(e) => setSearchTerm(e.target.value)}
+//                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-transparent"
+//                 />
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* TABLE - Only shows admin added data */}
+//         <div className="bg-white overflow-hidden">
+//           <div className="h-[65vh] overflow-y-auto">
+//             <table className="w-full text-sm table-fixed">
+//               <thead className="sticky top-0 bg-yellow-500 text-white z-10">
+//                 <tr>
+//                   <th className="border border-gray-300 px-2 py-3 text-center w-[60px]">NO</th>
+//                   <th className="border border-gray-300 px-2 py-3 text-center w-[80px]">IMAGE</th>
+//                   <th className="border border-gray-300 px-2 py-3 text-center w-[170px]">EVENT SECTION</th>
+//                   <th className="border border-gray-300 px-2 py-3 text-left w-[220px]">TITLE</th>
+//                   <th className="border border-gray-300 px-2 py-3 text-center w-[110px]">DATE</th>
+//                   <th className="border border-gray-300 px-2 py-3 text-center w-[120px]">ACTION</th>
+//                 </tr>
+//               </thead>
+
+//               <tbody>
+//                 {filteredEvents && filteredEvents.length > 0 ? (
+//                   filteredEvents.map((event, index) => (
+//                     <tr key={event.id} className="hover:bg-gray-50 transition-colors">
+//                       <td className="border border-gray-200 text-center py-3 px-2 truncate">
+//                         {index + 1}
+//                       </td>
+//                       <td className="border border-gray-200 text-center py-1 px-2">
+//                         {event.image ? (
+//                           <img 
+//                             src={event.image} 
+//                             alt={event.title}
+//                             className="w-10 h-10 object-cover rounded mx-auto"
+//                           />
+//                         ) : (
+//                           <div className="w-10 h-10 bg-gray-100 rounded mx-auto flex items-center justify-center">
+//                             <span className="text-xs text-gray-400">No img</span>
+//                           </div>
+//                         )}
+//                       </td>
+//                       <td className="border border-gray-200 text-center py-1 px-2">
+//                         <span className="px-2 py-1 text-yellow-700 rounded text-xs font-medium truncate block">
+//                           {event.section}
+//                         </span>
+//                       </td>
+//                       <td className="border border-gray-200 py-2 px-2">
+//                         <div className="font-medium text-gray-800 truncate" title={event.title}>
+//                           {event.title}
+//                         </div>
+//                       </td>
+//                       <td className="border border-gray-200 text-center py-1 px-2 truncate">
+//                         {event.date}
+//                       </td>
+//                       <td className="border border-gray-200 text-center py-1 px-2">
+//                         <div className="flex justify-center gap-1">
+//                           <button
+//                             onClick={() => openViewModal(event)}
+//                             className="p-1 hover:bg-blue-50 rounded transition-colors"
+//                             title="View Details"
+//                           >
+//                             <Eye size={15} className="text-blue-600" />
+//                           </button>
+//                           <button
+//                             onClick={() => openEditModal(event)}
+//                             className="p-1 hover:bg-yellow-50 rounded transition-colors"
+//                             title="Edit Event"
+//                           >
+//                             <FiEdit size={15} className="text-yellow-600" />
+//                           </button>
+//                           <button
+//                             onClick={() => handleDelete(event)}   
+//                             className="p-1 hover:bg-red-50 rounded transition-colors"
+//                             title="Delete Event"
+//                           >
+//                             <Trash2 size={15} className="text-red-600" />
+//                           </button>
+//                         </div>
+//                       </td>
+//                     </tr>
+//                   ))
+//                 ) : (
+//                   <tr>
+//                     <td colSpan="6" className="text-center py-10 text-gray-500">
+//                       No events found
+//                     </td>
+//                   </tr>
+//                 )}
+//               </tbody>
+//             </table>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* ADD MODAL */}
+//       {/* <EventAddModal
+//         isOpen={isAddModalOpen}
+//         onClose={() => setIsAddModalOpen(false)}
+//         onSave={handleSaveAdd}
+//       /> */}
+//       <EventAddModal
+//   isOpen={isAddModalOpen}
+//   onClose={() => setIsAddModalOpen(false)}
+//   onSave={handleSaveAdd}
+//   categories={categories}   // 🔥 ADD THIS
+// />
+
+//       {/* EDIT MODAL */}
+//       <EventEditModal
+//         isOpen={isEditModalOpen}
+//         onClose={() => {
+//           setIsEditModalOpen(false);
+//           setSelectedEvent(null);
+//         }}
+//         onSave={handleSaveEdit}
+//         data={selectedEvent}
+//       />
+
+//       {/* VIEW MODAL - SMALLER SIZE */}
+//   {isViewModalOpen && selectedEvent && (
+//   <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-200">
+    
+//     <div className="bg-white rounded-2xl w-full max-w-md mx-4 shadow-2xl overflow-hidden transform animate-in slide-in-from-bottom-4 duration-300 max-h-[90vh] overflow-y-auto">
+      
+//       {/* HEADER - Clean design */}
+//       <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 px-5 py-2.5 flex justify-between items-center sticky top-0 z-10">
+//         <div className="flex items-center gap-2">
+//           <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
+//           <h3 className="text-sm font-semibold text-white tracking-wide">Event Details</h3>
+//         </div>
+//         <button
+//           onClick={() => setIsViewModalOpen(false)}
+//           className="text-white hover:bg-white/20 rounded-full p-1 transition-all duration-200"
+//         >
+//           <X size={16} />
+//         </button>
+//       </div>
+
+//       {/* IMAGE - Smaller height */}
+//       {selectedEvent.image && (
+//         <div className="relative w-full h-32 overflow-hidden bg-gray-100">
+//           <img
+//             src={selectedEvent.image}
+//             alt={selectedEvent.title}
+//             className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+//           />
+//           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+//         </div>
+//       )}
+
+//       {/* BODY - Compact spacing */}
+//       <div className="p-4 space-y-3">
+        
+//         {/* SECTION + DATE - Card style */}
+//         <div className="grid grid-cols-2 gap-2">
+//           <div className="bg-gray-50 rounded-lg p-2 border border-gray-100">
+//             <div className="flex items-center gap-1.5">
+//               <Tag className="text-yellow-500" size={12} />
+//               <p className="text-[9px] text-gray-500 font-medium uppercase tracking-wide">Section</p>
+//             </div>
+//             <p className="text-[11px] font-semibold text-gray-800 mt-0.5 pl-5">
+//               {selectedEvent.section}
+//             </p>
+//           </div>
+
+//           <div className="bg-gray-50 rounded-lg p-2 border border-gray-100">
+//             <div className="flex items-center gap-1.5">
+//               <Calendar className="text-yellow-500" size={12} />
+//               <p className="text-[9px] text-gray-500 font-medium uppercase tracking-wide">Date</p>
+//             </div>
+//             <p className="text-[11px] font-semibold text-gray-800 mt-0.5 pl-5">
+//               {selectedEvent.date}
+//             </p>
+//           </div>
+//         </div>
+
+//         {/* TITLE - Highlighted */}
+//         <div className="bg-gradient-to-r from-yellow-50 to-transparent rounded-lg p-2 border-l-3 border-yellow-500">
+//           <p className="text-[9px] font-semibold text-yellow-600 uppercase tracking-wide mb-0.5">Title</p>
+//           <h2 className="text-xs font-bold text-gray-800 leading-snug">
+//             {selectedEvent.title}
+//           </h2>
+//         </div>
+
+//         {/* DESCRIPTION - Clean */}
+//         <div>
+//           <div className="flex items-center gap-1.5 mb-1 pb-0.5 border-b border-gray-100">
+//             <FileText className="text-yellow-500" size={12} />
+//             <p className="text-[10px] font-semibold text-gray-600 uppercase tracking-wide">Description</p>
+//           </div>
+//           <p className="text-[11px] text-gray-600 leading-relaxed line-clamp-3">
+//             {selectedEvent.description}
+//           </p>
+//         </div>
+
+//         {/* HIGHLIGHTS - Compact */}
+//         {selectedEvent.highlight && selectedEvent.highlight.trim() !== "" && (
+//           <div className="bg-amber-50 rounded-lg p-2 border border-amber-100">
+//             <div className="flex items-center gap-1.5 mb-1">
+//               <Star className="text-yellow-500 fill-yellow-500" size={12} />
+//               <p className="text-[10px] font-semibold text-gray-700 uppercase tracking-wide">Highlights</p>
+//             </div>
+//             <div className="space-y-1">
+//               {selectedEvent.highlight.split("\n").slice(0, 3).map((item, i) => (
+//                 item.trim() && (
+//                   <div key={i} className="flex items-start gap-1.5">
+//                     <span className="w-1 h-1 bg-yellow-500 rounded-full mt-1"></span>
+//                     <p className="text-[10px] text-gray-700 leading-relaxed line-clamp-1">{item}</p>
+//                   </div>
+//                 )
+//               ))}
+//               {selectedEvent.highlight.split("\n").filter(item => item.trim()).length > 3 && (
+//                 <p className="text-[9px] text-gray-400 pl-3">+{selectedEvent.highlight.split("\n").filter(item => item.trim()).length - 3} more</p>
+//               )}
+//             </div>
+//           </div>
+//         )}
+//       </div>
+
+//       {/* FOOTER - Smaller */}
+//       <div className="px-4 py-2.5 bg-gray-50 border-t border-gray-100 flex justify-end sticky bottom-0">
+//         <button
+//           onClick={() => setIsViewModalOpen(false)}
+//           className="px-3 py-1 text-[11px] font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm"
+//         >
+//           Close
+//         </button>
+//       </div>
+
+//     </div>
+//   </div>
+// )}
+//     </div>
+//   );
+// }
+
+// import { useState, useEffect } from "react";
+// import { Plus, Edit2, Trash2, Eye, Search, X, Calendar, Tag, FileText, Star } from "lucide-react";
+// import { FiEdit, FiTrash2, FiEye } from "react-icons/fi";
+// import { toast, ToastContainer } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+// import EventAddModal from "../EventPage/EventAdd";
+// import EventEditModal from "../EventPage/EventEdit";
+// import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
+// import { db } from "../../../firebase";
+
+// export default function EventList() {
+//   const [events, setEvents] = useState([]);
+//   const [filteredEvents, setFilteredEvents] = useState([]);
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+//   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+//   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+//   const [selectedEvent, setSelectedEvent] = useState(null);
+//   const [categories, setCategories] = useState([]);
+
+//   useEffect(() => {
+//     loadCategories();
+//     loadEvents();
+//   }, []);
+
+//   const loadCategories = async () => {
+//     try {
+//       const snap = await getDocs(collection(db, "eventCategories"));
+//       const data = snap.docs.map(doc => ({
+//         id: doc.id,
+//         ...doc.data()
+//       }));
+//       setCategories(data);
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   };
+
+//   const loadEvents = async () => {
+//     try {
+//       const snap = await getDocs(collection(db, "events"));
+//       const data = snap.docs.map(doc => ({
+//         id: doc.id,
+//         ...doc.data()
+//       }));
+//       setEvents(data);
+//       setFilteredEvents(data);
+//     } catch (error) {
+//       console.log(error);
+//       toast.error("Failed to load events");
+//     }
+//   };
+
+//   // SEARCH
+//   useEffect(() => {
+//     if (searchTerm === "") {
+//       setFilteredEvents(events);
+//     } else {
+//       const filtered = events.filter(event =>
+//         event.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//         event.section?.toLowerCase().includes(searchTerm.toLowerCase())
+//       );
+//       setFilteredEvents(filtered);
+//     }
+//   }, [searchTerm, events]);
+
+//   // ✅ FIXED DELETE EVENT
+//   const handleDelete = async (eventId) => {
+//     if (!window.confirm("Are you sure you want to delete this event?")) {
+//       return;
+//     }
+    
+//     try {
+//       const id = String(eventId);
+//       console.log("Deleting event ID:", id);
+      
+//       await deleteDoc(doc(db, "events", id));
+//       toast.success("Event deleted successfully");
+      
+//       // Refresh the list
+//       await loadEvents();
+      
+//     } catch (error) {
+//       console.log("Delete error:", error);
+//       toast.error("Delete failed: " + error.message);
+//     }
+//   };
+
+//   // OPEN MODALS
+//   const openAddModal = () => {
+//     setIsAddModalOpen(true);
+//   };
+
+//   const openEditModal = (event) => {
+//     setSelectedEvent(event);
+//     setIsEditModalOpen(true);
+//   };
+
+//   const openViewModal = (event) => {
+//     setSelectedEvent(event);
+//     setIsViewModalOpen(true);
+//   };
+
+//   // ADD EVENT
+//   const handleSaveAdd = async (newEvent) => {
+//     try {
+//       await addDoc(collection(db, "events"), newEvent);
+//       toast.success("Event added successfully");
+//       await loadEvents();
+//       setIsAddModalOpen(false);
+//     } catch (error) {
+//       console.log(error);
+//       toast.error("Failed to add event");
+//     }
+//   };
+
+//   // UPDATE EVENT
+//   const handleSaveEdit = async (updatedEvent) => {
+//     try {
+//       const eventId = String(updatedEvent.id);
+      
+//       if (!eventId) {
+//         toast.error("Invalid event data");
+//         return;
+//       }
+
+//       const eventRef = doc(db, "events", eventId);
+      
+//       const updateData = {
+//         section: updatedEvent.section,
+//         title: updatedEvent.title,
+//         description: updatedEvent.description,
+//         highlight: updatedEvent.highlight || "",
+//         date: updatedEvent.date,
+//         image: updatedEvent.image || "",
+//         updatedAt: new Date().toISOString()
+//       };
+
+//       await updateDoc(eventRef, updateData);
+//       toast.success("Event updated successfully");
+//       await loadEvents();
+//       setIsEditModalOpen(false);
+//       setSelectedEvent(null);
+//     } catch (error) {
+//       console.log("Update error:", error);
+//       toast.error("Update failed: " + error.message);
+//     }
+//   };
+
+//   return (
+//     <div className="min-h-screen py-2">
+//       <ToastContainer position="top-right" autoClose={2000} theme="colored" />
+
+//       <div className="max-w-8xl mx-auto">
+//         {/* TOP BAR */}
+//         <div className="bg-white mb-5">
+//           <div className="flex flex-wrap justify-between items-center gap-4">
+//             <button
+//               onClick={openAddModal}
+//               className="flex items-center gap-2 bg-yellow-500 text-white px-5 py-2 rounded-lg hover:bg-yellow-600 transition-all duration-200 shadow-md"
+//             >
+//               <Plus size={18} />
+//               Add New Event
+//             </button>
+
+//             <div className="flex-1 max-w-xs">
+//               <div className="relative">
+//                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+//                 <input
+//                   type="text"
+//                   placeholder="Search events by section..."
+//                   value={searchTerm}
+//                   onChange={(e) => setSearchTerm(e.target.value)}
+//                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-transparent"
+//                 />
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* TABLE */}
+//         <div className="bg-white overflow-hidden">
+//           <div className="h-[65vh] overflow-y-auto">
+//             <table className="w-full text-sm table-fixed">
+//               <thead className="sticky top-0 bg-yellow-500 text-white z-10">
+//                 <tr>
+//                   <th className="border border-gray-300 px-2 py-3 text-center w-[60px]">NO</th>
+//                   <th className="border border-gray-300 px-2 py-3 text-center w-[80px]">IMAGE</th>
+//                   <th className="border border-gray-300 px-2 py-3 text-center w-[170px]">EVENT SECTION</th>
+//                   <th className="border border-gray-300 px-2 py-3 text-left w-[220px]">TITLE</th>
+//                   <th className="border border-gray-300 px-2 py-3 text-center w-[110px]">DATE</th>
+//                   <th className="border border-gray-300 px-2 py-3 text-center w-[120px]">ACTION</th>
+//                 </tr>
+//               </thead>
+
+//               <tbody>
+//                 {filteredEvents && filteredEvents.length > 0 ? (
+//                   filteredEvents.map((event, index) => (
+//                     <tr key={event.id} className="hover:bg-gray-50 transition-colors">
+//                       <td className="border border-gray-200 text-center py-3 px-2">
+//                         {index + 1}
+//                       </td>
+//                       <td className="border border-gray-200 text-center py-1 px-2">
+//                         {event.image ? (
+//                           <img 
+//                             src={event.image} 
+//                             alt={event.title}
+//                             className="w-10 h-10 object-cover rounded mx-auto"
+//                           />
+//                         ) : (
+//                           <div className="w-10 h-10 bg-gray-100 rounded mx-auto flex items-center justify-center">
+//                             <span className="text-xs text-gray-400">No img</span>
+//                           </div>
+//                         )}
+//                       </td>
+//                       <td className="border border-gray-200 text-center py-1 px-2">
+//                         <span className="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs font-medium truncate block">
+//                           {event.section}
+//                         </span>
+//                       </td>
+//                       <td className="border border-gray-200 py-2 px-2">
+//                         <div className="font-medium text-gray-800 truncate" title={event.title}>
+//                           {event.title}
+//                         </div>
+//                       </td>
+//                       <td className="border border-gray-200 text-center py-1 px-2">
+//                         {event.date}
+//                       </td>
+//                       <td className="border border-gray-200 text-center py-1 px-2">
+//                         <div className="flex justify-center gap-1">
+//                           <button
+//                             onClick={() => openViewModal(event)}
+//                             className="p-1 hover:bg-blue-50 rounded transition-colors"
+//                             title="View Details"
+//                           >
+//                             <Eye size={15} className="text-blue-600" />
+//                           </button>
+//                           <button
+//                             onClick={() => openEditModal(event)}
+//                             className="p-1 hover:bg-yellow-50 rounded transition-colors"
+//                             title="Edit Event"
+//                           >
+//                             <FiEdit size={15} className="text-yellow-600" />
+//                           </button>
+//                           <button
+//                             onClick={() => handleDelete(event.id)}
+//                             className="p-1 hover:bg-red-50 rounded transition-colors"
+//                             title="Delete Event"
+//                           >
+//                             <Trash2 size={15} className="text-red-600" />
+//                           </button>
+//                         </div>
+//                       </td>
+//                     </tr>
+//                   ))
+//                 ) : (
+//                   <tr>
+//                     <td colSpan="6" className="text-center py-10 text-gray-500">
+//                       No events found
+//                     </td>
+//                   </tr>
+//                 )}
+//               </tbody>
+//             </table>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* ADD MODAL */}
+//       <EventAddModal
+//         isOpen={isAddModalOpen}
+//         onClose={() => setIsAddModalOpen(false)}
+//         onSave={handleSaveAdd}
+//         categories={categories}
+//       />
+
+//       {/* EDIT MODAL */}
+//       <EventEditModal
+//         isOpen={isEditModalOpen}
+//         onClose={() => {
+//           setIsEditModalOpen(false);
+//           setSelectedEvent(null);
+//         }}
+//         onSave={handleSaveEdit}
+//         data={selectedEvent}
+//         categories={categories}
+//       />
+
+//       {/* VIEW MODAL */}
+//       {isViewModalOpen && selectedEvent && (
+//         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+//           <div className="bg-white rounded-2xl w-full max-w-md mx-4 shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
+            
+//             <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 px-5 py-2.5 flex justify-between items-center sticky top-0 z-10">
+//               <div className="flex items-center gap-2">
+//                 <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
+//                 <h3 className="text-sm font-semibold text-white tracking-wide">Event Details</h3>
+//               </div>
+//               <button
+//                 onClick={() => setIsViewModalOpen(false)}
+//                 className="text-white hover:bg-white/20 rounded-full p-1 transition-all duration-200"
+//               >
+//                 <X size={16} />
+//               </button>
+//             </div>
+
+//             {selectedEvent.image && (
+//               <div className="relative w-full h-32 overflow-hidden bg-gray-100">
+//                 <img
+//                   src={selectedEvent.image}
+//                   alt={selectedEvent.title}
+//                   className="w-full h-full object-cover"
+//                 />
+//               </div>
+//             )}
+
+//             <div className="p-4 space-y-3">
+//               <div className="grid grid-cols-2 gap-2">
+//                 <div className="bg-gray-50 rounded-lg p-2 border border-gray-100">
+//                   <div className="flex items-center gap-1.5">
+//                     <Tag className="text-yellow-500" size={12} />
+//                     <p className="text-[9px] text-gray-500 font-medium uppercase tracking-wide">Section</p>
+//                   </div>
+//                   <p className="text-[11px] font-semibold text-gray-800 mt-0.5 pl-5">
+//                     {selectedEvent.section}
+//                   </p>
+//                 </div>
+
+//                 <div className="bg-gray-50 rounded-lg p-2 border border-gray-100">
+//                   <div className="flex items-center gap-1.5">
+//                     <Calendar className="text-yellow-500" size={12} />
+//                     <p className="text-[9px] text-gray-500 font-medium uppercase tracking-wide">Date</p>
+//                   </div>
+//                   <p className="text-[11px] font-semibold text-gray-800 mt-0.5 pl-5">
+//                     {selectedEvent.date}
+//                   </p>
+//                 </div>
+//               </div>
+
+//               <div className="bg-gradient-to-r from-yellow-50 to-transparent rounded-lg p-2 border-l-3 border-yellow-500">
+//                 <p className="text-[9px] font-semibold text-yellow-600 uppercase tracking-wide mb-0.5">Title</p>
+//                 <h2 className="text-xs font-bold text-gray-800 leading-snug">
+//                   {selectedEvent.title}
+//                 </h2>
+//               </div>
+
+//               <div>
+//                 <div className="flex items-center gap-1.5 mb-1 pb-0.5 border-b border-gray-100">
+//                   <FileText className="text-yellow-500" size={12} />
+//                   <p className="text-[10px] font-semibold text-gray-600 uppercase tracking-wide">Description</p>
+//                 </div>
+//                 <p className="text-[11px] text-gray-600 leading-relaxed">
+//                   {selectedEvent.description}
+//                 </p>
+//               </div>
+
+//               {selectedEvent.highlight && selectedEvent.highlight.trim() !== "" && (
+//                 <div className="bg-amber-50 rounded-lg p-2 border border-amber-100">
+//                   <div className="flex items-center gap-1.5 mb-1">
+//                     <Star className="text-yellow-500 fill-yellow-500" size={12} />
+//                     <p className="text-[10px] font-semibold text-gray-700 uppercase tracking-wide">Highlights</p>
+//                   </div>
+//                   <div className="space-y-1">
+//                     {selectedEvent.highlight.split("\n").map((item, i) => (
+//                       item.trim() && (
+//                         <div key={i} className="flex items-start gap-1.5">
+//                           <span className="w-1 h-1 bg-yellow-500 rounded-full mt-1"></span>
+//                           <p className="text-[10px] text-gray-700 leading-relaxed">{item}</p>
+//                         </div>
+//                       )
+//                     ))}
+//                   </div>
+//                 </div>
+//               )}
+//             </div>
+
+//             <div className="px-4 py-2.5 bg-gray-50 border-t border-gray-100 flex justify-end">
+//               <button
+//                 onClick={() => setIsViewModalOpen(false)}
+//                 className="px-3 py-1 text-[11px] font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50"
+//               >
+//                 Close
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+
 import { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, Eye, Search, X, Calendar, Tag, FileText, Star } from "lucide-react";
 import { FiEdit, FiTrash2, FiEye } from "react-icons/fi";
@@ -1975,6 +2798,8 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EventAddModal from "../EventPage/EventAdd";
 import EventEditModal from "../EventPage/EventEdit";
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc , query, where  } from "firebase/firestore";
+import { db } from "../../../firebase";
 
 export default function EventList() {
   const [events, setEvents] = useState([]);
@@ -1984,39 +2809,124 @@ export default function EventList() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
+ 
 
-  // LOAD EVENTS - Only from admin added data
+
   useEffect(() => {
+    // Clear localStorage on mount to prevent stale data
+    localStorage.removeItem("adminEvents");
+    loadCategories();
     loadEvents();
   }, []);
 
-  const loadEvents = () => {
-    // Only get events from localStorage (admin added data)
-    const data = JSON.parse(localStorage.getItem("adminEvents")) || [];
-    setEvents(data);
-    setFilteredEvents(data);
+  const loadCategories = async () => {
+    try {
+      const snap = await getDocs(collection(db, "eventCategories"));
+      const data = snap.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setCategories(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const loadEvents = async () => {
+    try {
+      setLoading(true);
+      const snap = await getDocs(collection(db, "events"));
+      const data = snap.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      console.log("✅ Loaded from Firebase:", data.length, "events");
+      console.log("Event IDs:", data.map(e => ({ id: e.id, title: e.title })));
+      setEvents(data);
+      setFilteredEvents(data);
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to load events");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // SEARCH
-  useEffect(() => {
-    if (searchTerm === "") {
-      setFilteredEvents(events);
-    } else {
-      const filtered = events.filter(event =>
-        event.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        event.section?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredEvents(filtered);
-    }
-  }, [searchTerm, events]);
+  // useEffect(() => {
+  //   if (searchTerm === "") {
+  //     setFilteredEvents(events);
+  //   } else {
+  //     const filtered = events.filter(event =>
+  //       event.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //       event.section?.toLowerCase().includes(searchTerm.toLowerCase())
+  //     );
+  //     setFilteredEvents(filtered);
+  //   }
+  // }, [searchTerm, events]);
+  const handleSearch = (value) => {
+  setSearchTerm(value);
+  
+  if (!value.trim()) {
+    setFilteredEvents(events);
+    return;
+  }
+  
+  const searchLower = value.trim().toLowerCase();
+  const filtered = events.filter(event => 
+    event.title?.toLowerCase().includes(searchLower) ||
+    event.section?.toLowerCase().includes(searchLower) ||
+    event.description?.toLowerCase().includes(searchLower)
+  );
+  
+  setFilteredEvents(filtered);
+  
+  if (filtered.length === 0) {
+    toast.info(`No results found for "${value}"`);
+  }
+};
 
-  // DELETE EVENT
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this event?")) {
-      const updated = events.filter(event => event.id !== id);
-      localStorage.setItem("adminEvents", JSON.stringify(updated));
-      setEvents(updated);
+
+  // ✅ FIXED DELETE EVENT - Only delete if ID exists in current events
+  const handleDelete = async (eventId) => {
+    console.log("Delete clicked for ID:", eventId);
+    
+    // Check if this event exists in our current events state
+    const eventExists = events.some(e => e.id === String(eventId));
+    if (!eventExists) {
+      console.log("Event not found in current list, refreshing...");
+      await loadEvents();
+      toast.info("Event list refreshed");
+      return;
+    }
+    
+    if (!window.confirm("Are you sure you want to delete this event?")) {
+      return;
+    }
+    
+    try {
+      const id = String(eventId);
+      console.log("Deleting event ID:", id);
+      
+      const eventRef = doc(db, "events", id);
+      await deleteDoc(eventRef);
+      
+      console.log("Delete successful");
       toast.error("Event deleted successfully");
+      
+      // Reload events from Firebase
+      await loadEvents();
+      
+    } catch (error) {
+      console.log("Delete error:", error);
+      if (error.code === 'not-found') {
+        toast.error("Event not found - refreshing list");
+        await loadEvents();
+      } else {
+        toast.error("Delete failed: " + error.message);
+      }
     }
   };
 
@@ -2035,62 +2945,141 @@ export default function EventList() {
     setIsViewModalOpen(true);
   };
 
-  // HANDLE SAVE FROM ADD MODAL
-  const handleSaveAdd = (newEvent) => {
-    const existing = JSON.parse(localStorage.getItem("adminEvents")) || [];
-    const updated = [...existing, newEvent];
-    localStorage.setItem("adminEvents", JSON.stringify(updated));
-    setEvents(updated);
-    toast.success("Event added successfully");
-    setIsAddModalOpen(false);
+  // ADD EVENT
+  const handleSaveAdd = async (newEvent) => {
+    try {
+      await addDoc(collection(db, "events"), {
+        section: newEvent.section,
+        title: newEvent.title,
+        description: newEvent.description,
+        highlight: newEvent.highlight || "",
+        date: newEvent.date,
+        image: newEvent.image || "",
+        createdAt: new Date().toISOString()
+      });
+      
+      toast.success("Event added successfully");
+      await loadEvents();
+      setIsAddModalOpen(false);
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to add event");
+    }
   };
 
-  // HANDLE SAVE FROM EDIT MODAL
-  const handleSaveEdit = (updatedEvent) => {
-    const data = JSON.parse(localStorage.getItem("adminEvents")) || [];
-    const updated = data.map(event =>
-      event.id === updatedEvent.id ? updatedEvent : event
-    );
-    localStorage.setItem("adminEvents", JSON.stringify(updated));
-    setEvents(updated);
-    toast.success("Event updated successfully");
-    setIsEditModalOpen(false);
-    setSelectedEvent(null);
+  // UPDATE EVENT
+  const handleSaveEdit = async (updatedEvent) => {
+    try {
+      const eventId = String(updatedEvent.id);
+      
+      if (!eventId) {
+        toast.error("Invalid event data");
+        return;
+      }
+
+      const eventRef = doc(db, "events", eventId);
+      
+      const updateData = {
+        section: updatedEvent.section,
+        title: updatedEvent.title,
+        description: updatedEvent.description,
+        highlight: updatedEvent.highlight || "",
+        date: updatedEvent.date,
+        image: updatedEvent.image || "",
+        updatedAt: new Date().toISOString()
+      };
+
+      await updateDoc(eventRef, updateData);
+      toast.success("Event updated successfully");
+      await loadEvents();
+      setIsEditModalOpen(false);
+      setSelectedEvent(null);
+    } catch (error) {
+      console.log("Update error:", error);
+      toast.error("Update failed: " + error.message);
+    }
   };
+
+  // Force refresh from Firebase
+  const handleRefresh = async () => {
+    localStorage.removeItem("adminEvents");
+    // toast.info("Refreshing from Firebase...");
+    await loadEvents();
+    toast.success("Events refreshed!");
+  };
+
+  if (loading && events.length === 0) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading events...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen py-2 ">
+    <div className="min-h-screen py-2">
       <ToastContainer position="top-right" autoClose={2000} theme="colored" />
 
       <div className="max-w-8xl mx-auto">
         {/* TOP BAR */}
-        <div className="bg-white mb-5  ">
+        <div className="bg-white mb-5">
           <div className="flex flex-wrap justify-between items-center gap-4">
-            <button
-              onClick={openAddModal}
-              className="flex items-center gap-2 bg-yellow-500 text-white px-5 py-2 rounded-lg hover:bg-yellow-600 transition-all duration-200 shadow-md"
-            >
-              <Plus size={18} />
-              Add New Event
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={openAddModal}
+                className="flex items-center gap-2 bg-yellow-500 text-white px-5 py-2 rounded-lg hover:bg-yellow-600 transition-all duration-200 shadow-md"
+              >
+                <Plus size={18} />
+                Add New Event
+              </button>
+              
+              <button
+                onClick={handleRefresh}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+                title="Refresh from Firebase"
+              >
+                🔄 Refresh
+              </button>
+            </div>
 
             <div className="flex-1 max-w-xs">
-              <div className="relative">
+              {/* <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                 <input
                   type="text"
-                  placeholder="Search events by section..."
+                  placeholder="Search events by section or title..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-transparent"
                 />
-              </div>
+              </div> */}
+              <div className="relative">
+  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+  <input
+    type="text"
+    placeholder="Search events by title or section..."
+    value={searchTerm}
+    onChange={(e) => handleSearch(e.target.value)}
+    className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-transparent"
+  />
+  {searchTerm && (
+    <button
+      onClick={() => handleSearch("")}
+      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+    >
+      <X size={16} />
+    </button>
+  )}
+</div>
             </div>
           </div>
         </div>
 
-        {/* TABLE - Only shows admin added data */}
-        <div className="bg-white overflow-hidden">
+        {/* TABLE */}
+        <div className="bg-white overflow-hidden ">
           <div className="h-[65vh] overflow-y-auto">
             <table className="w-full text-sm table-fixed">
               <thead className="sticky top-0 bg-yellow-500 text-white z-10">
@@ -2098,7 +3087,7 @@ export default function EventList() {
                   <th className="border border-gray-300 px-2 py-3 text-center w-[60px]">NO</th>
                   <th className="border border-gray-300 px-2 py-3 text-center w-[80px]">IMAGE</th>
                   <th className="border border-gray-300 px-2 py-3 text-center w-[170px]">EVENT SECTION</th>
-                  <th className="border border-gray-300 px-2 py-3 text-left w-[220px]">TITLE</th>
+                  <th className="border border-gray-300 px-2 py-3 text-center w-[220px]">TITLE</th>
                   <th className="border border-gray-300 px-2 py-3 text-center w-[110px]">DATE</th>
                   <th className="border border-gray-300 px-2 py-3 text-center w-[120px]">ACTION</th>
                 </tr>
@@ -2108,9 +3097,9 @@ export default function EventList() {
                 {filteredEvents && filteredEvents.length > 0 ? (
                   filteredEvents.map((event, index) => (
                     <tr key={event.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="border border-gray-200 text-center py-3 px-2 truncate">
+                      <td className="border border-gray-200 text-center py-3 px-2">
                         {index + 1}
-                      </td>
+                       </td>
                       <td className="border border-gray-200 text-center py-1 px-2">
                         {event.image ? (
                           <img 
@@ -2123,20 +3112,20 @@ export default function EventList() {
                             <span className="text-xs text-gray-400">No img</span>
                           </div>
                         )}
-                      </td>
+                       </td>
                       <td className="border border-gray-200 text-center py-1 px-2">
-                        <span className="px-2 py-1 text-yellow-700 rounded text-xs font-medium truncate block">
+                        <span className="px-2 py-1  text-yellow-700 rounded text-xs font-medium truncate block">
                           {event.section}
                         </span>
-                      </td>
-                      <td className="border border-gray-200 py-2 px-2">
+                       </td>
+                      <td className="border text-center border-gray-200 py-2 px-2">
                         <div className="font-medium text-gray-800 truncate" title={event.title}>
                           {event.title}
                         </div>
-                      </td>
-                      <td className="border border-gray-200 text-center py-1 px-2 truncate">
+                       </td>
+                      <td className="border border-gray-200 text-center py-1 px-2">
                         {event.date}
-                      </td>
+                       </td>
                       <td className="border border-gray-200 text-center py-1 px-2">
                         <div className="flex justify-center gap-1">
                           <button
@@ -2161,13 +3150,13 @@ export default function EventList() {
                             <Trash2 size={15} className="text-red-600" />
                           </button>
                         </div>
-                      </td>
+                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
                     <td colSpan="6" className="text-center py-10 text-gray-500">
-                      No events found
+                      No events found. Click "Add New Event" to create one.
                     </td>
                   </tr>
                 )}
@@ -2182,6 +3171,7 @@ export default function EventList() {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSave={handleSaveAdd}
+        categories={categories}
       />
 
       {/* EDIT MODAL */}
@@ -2193,122 +3183,108 @@ export default function EventList() {
         }}
         onSave={handleSaveEdit}
         data={selectedEvent}
+        categories={categories}
       />
 
-      {/* VIEW MODAL - SMALLER SIZE */}
-  {isViewModalOpen && selectedEvent && (
-  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-in fade-in duration-200">
-    
-    <div className="bg-white rounded-2xl w-full max-w-md mx-4 shadow-2xl overflow-hidden transform animate-in slide-in-from-bottom-4 duration-300 max-h-[90vh] overflow-y-auto">
-      
-      {/* HEADER - Clean design */}
-      <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 px-5 py-2.5 flex justify-between items-center sticky top-0 z-10">
-        <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
-          <h3 className="text-sm font-semibold text-white tracking-wide">Event Details</h3>
-        </div>
-        <button
-          onClick={() => setIsViewModalOpen(false)}
-          className="text-white hover:bg-white/20 rounded-full p-1 transition-all duration-200"
-        >
-          <X size={16} />
-        </button>
-      </div>
-
-      {/* IMAGE - Smaller height */}
-      {selectedEvent.image && (
-        <div className="relative w-full h-32 overflow-hidden bg-gray-100">
-          <img
-            src={selectedEvent.image}
-            alt={selectedEvent.title}
-            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-        </div>
-      )}
-
-      {/* BODY - Compact spacing */}
-      <div className="p-4 space-y-3">
-        
-        {/* SECTION + DATE - Card style */}
-        <div className="grid grid-cols-2 gap-2">
-          <div className="bg-gray-50 rounded-lg p-2 border border-gray-100">
-            <div className="flex items-center gap-1.5">
-              <Tag className="text-yellow-500" size={12} />
-              <p className="text-[9px] text-gray-500 font-medium uppercase tracking-wide">Section</p>
+      {/* VIEW MODAL */}
+      {isViewModalOpen && selectedEvent && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl w-full max-w-md mx-4 shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
+            
+            <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 px-5 py-2.5 flex justify-between items-center sticky top-0 z-10">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
+                <h3 className="text-sm font-semibold text-white tracking-wide">Event Details</h3>
+              </div>
+              <button
+                onClick={() => setIsViewModalOpen(false)}
+                className="text-white hover:bg-white/20 rounded-full p-1 transition-all duration-200"
+              >
+                <X size={16} />
+              </button>
             </div>
-            <p className="text-[11px] font-semibold text-gray-800 mt-0.5 pl-5">
-              {selectedEvent.section}
-            </p>
-          </div>
 
-          <div className="bg-gray-50 rounded-lg p-2 border border-gray-100">
-            <div className="flex items-center gap-1.5">
-              <Calendar className="text-yellow-500" size={12} />
-              <p className="text-[9px] text-gray-500 font-medium uppercase tracking-wide">Date</p>
-            </div>
-            <p className="text-[11px] font-semibold text-gray-800 mt-0.5 pl-5">
-              {selectedEvent.date}
-            </p>
-          </div>
-        </div>
+            {selectedEvent.image && (
+              <div className="relative w-full h-32 overflow-hidden bg-gray-100">
+                <img
+                  src={selectedEvent.image}
+                  alt={selectedEvent.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
 
-        {/* TITLE - Highlighted */}
-        <div className="bg-gradient-to-r from-yellow-50 to-transparent rounded-lg p-2 border-l-3 border-yellow-500">
-          <p className="text-[9px] font-semibold text-yellow-600 uppercase tracking-wide mb-0.5">Title</p>
-          <h2 className="text-xs font-bold text-gray-800 leading-snug">
-            {selectedEvent.title}
-          </h2>
-        </div>
-
-        {/* DESCRIPTION - Clean */}
-        <div>
-          <div className="flex items-center gap-1.5 mb-1 pb-0.5 border-b border-gray-100">
-            <FileText className="text-yellow-500" size={12} />
-            <p className="text-[10px] font-semibold text-gray-600 uppercase tracking-wide">Description</p>
-          </div>
-          <p className="text-[11px] text-gray-600 leading-relaxed line-clamp-3">
-            {selectedEvent.description}
-          </p>
-        </div>
-
-        {/* HIGHLIGHTS - Compact */}
-        {selectedEvent.highlight && selectedEvent.highlight.trim() !== "" && (
-          <div className="bg-amber-50 rounded-lg p-2 border border-amber-100">
-            <div className="flex items-center gap-1.5 mb-1">
-              <Star className="text-yellow-500 fill-yellow-500" size={12} />
-              <p className="text-[10px] font-semibold text-gray-700 uppercase tracking-wide">Highlights</p>
-            </div>
-            <div className="space-y-1">
-              {selectedEvent.highlight.split("\n").slice(0, 3).map((item, i) => (
-                item.trim() && (
-                  <div key={i} className="flex items-start gap-1.5">
-                    <span className="w-1 h-1 bg-yellow-500 rounded-full mt-1"></span>
-                    <p className="text-[10px] text-gray-700 leading-relaxed line-clamp-1">{item}</p>
+            <div className="p-4 space-y-3">
+              <div className="grid grid-cols-2 gap-2">
+                <div className="bg-gray-50 rounded-lg p-2 border border-gray-100">
+                  <div className="flex items-center gap-1.5">
+                    <Tag className="text-yellow-500" size={12} />
+                    <p className="text-[9px] text-gray-500 font-medium uppercase tracking-wide">Section</p>
                   </div>
-                )
-              ))}
-              {selectedEvent.highlight.split("\n").filter(item => item.trim()).length > 3 && (
-                <p className="text-[9px] text-gray-400 pl-3">+{selectedEvent.highlight.split("\n").filter(item => item.trim()).length - 3} more</p>
+                  <p className="text-[11px] font-semibold text-gray-800 mt-0.5 pl-5">
+                    {selectedEvent.section}
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-2 border border-gray-100">
+                  <div className="flex items-center gap-1.5">
+                    <Calendar className="text-yellow-500" size={12} />
+                    <p className="text-[9px] text-gray-500 font-medium uppercase tracking-wide">Date</p>
+                  </div>
+                  <p className="text-[11px] font-semibold text-gray-800 mt-0.5 pl-5">
+                    {selectedEvent.date}
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-yellow-50 to-transparent rounded-lg p-2 border-l-3 border-yellow-500">
+                <p className="text-[9px] font-semibold text-yellow-600 uppercase tracking-wide mb-0.5">Title</p>
+                <h2 className="text-xs font-bold text-gray-800 leading-snug">
+                  {selectedEvent.title}
+                </h2>
+              </div>
+
+              <div>
+                <div className="flex items-center gap-1.5 mb-1 pb-0.5 border-b border-gray-100">
+                  <FileText className="text-yellow-500" size={12} />
+                  <p className="text-[10px] font-semibold text-gray-600 uppercase tracking-wide">Description</p>
+                </div>
+                <p className="text-[11px] text-gray-600 leading-relaxed">
+                  {selectedEvent.description}
+                </p>
+              </div>
+
+              {selectedEvent.highlight && selectedEvent.highlight.trim() !== "" && (
+                <div className="bg-amber-50 rounded-lg p-2 border border-amber-100">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Star className="text-yellow-500 fill-yellow-500" size={12} />
+                    <p className="text-[10px] font-semibold text-gray-700 uppercase tracking-wide">Highlights</p>
+                  </div>
+                  <div className="space-y-1">
+                    {selectedEvent.highlight.split("\n").map((item, i) => (
+                      item.trim() && (
+                        <div key={i} className="flex items-start gap-1.5">
+                          <span className="w-1 h-1 bg-yellow-500 rounded-full mt-1"></span>
+                          <p className="text-[10px] text-gray-700 leading-relaxed">{item}</p>
+                        </div>
+                      )
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
+
+            <div className="px-4 py-2.5 bg-gray-50 border-t border-gray-100 flex justify-end">
+              <button
+                onClick={() => setIsViewModalOpen(false)}
+                className="px-3 py-1 text-[11px] font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50"
+              >
+                Close
+              </button>
+            </div>
           </div>
-        )}
-      </div>
-
-      {/* FOOTER - Smaller */}
-      <div className="px-4 py-2.5 bg-gray-50 border-t border-gray-100 flex justify-end sticky bottom-0">
-        <button
-          onClick={() => setIsViewModalOpen(false)}
-          className="px-3 py-1 text-[11px] font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm"
-        >
-          Close
-        </button>
-      </div>
-
-    </div>
-  </div>
-)}
+        </div>
+      )}
     </div>
   );
 }

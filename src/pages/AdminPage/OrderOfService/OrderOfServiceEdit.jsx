@@ -413,12 +413,503 @@
 //   );
 // }
 
+// import React, { useState, useEffect } from "react";
+// import { FiX } from "react-icons/fi";
+
+// export default function OrderOfServiceEditModal({ isOpen, onClose, onSave, data }) {
+//   const [form, setForm] = useState({
+//     id: null,
+//     day: "sunday",
+//     name: "",
+//     startTime: "",
+//     endTime: "",
+//     location: "",
+//     description: "",
+//     requiresFather: false,
+//     fatherName: "",
+//   });
+
+//   useEffect(() => {
+//     if (data) {
+//       // Check if time is already in AM/PM format or 24hr format
+//       let start = "";
+//       let end = "";
+      
+//       if (data.time) {
+//         // If time contains "AM" or "PM", it's already formatted
+//         if (data.time.includes("AM") || data.time.includes("PM")) {
+//           // Already formatted, split as is
+//           const [s, e] = data.time.split(" - ");
+//           start = convertTime12To24(s);
+//           end = convertTime12To24(e);
+//         } else {
+//           // Raw 24hr format
+//           const [s, e] = data.time.split(" - ");
+//           start = s;
+//           end = e;
+//         }
+//       }
+      
+//       setForm({
+//         id: data.id,
+//         day: data.day || "sunday",
+//         name: data.name || "",
+//         startTime: start || "",
+//         endTime: end || "",
+//         location: data.location || "",
+//         description: data.description || "",
+//         requiresFather: data.requiresFather || false,
+//         fatherName: data.fatherName || "",
+//       });
+//     }
+//   }, [data]);
+
+//   // Convert AM/PM to 24hr format for input field
+//   const convertTime12To24 = (time12h) => {
+//     if (!time12h) return "";
+    
+//     const [time, modifier] = time12h.split(" ");
+//     let [hours, minutes] = time.split(":");
+    
+//     if (hours === "12") {
+//       hours = "00";
+//     }
+//     if (modifier === "PM") {
+//       hours = parseInt(hours, 10) + 12;
+//     }
+    
+//     return `${hours.toString().padStart(2, "0")}:${minutes}`;
+//   };
+
+//   // Convert 24hr to AM/PM for display
+//   const formatTimeTo12Hr = (time) => {
+//     if (!time) return "";
+
+//     const [hour, min] = time.split(":");
+//     let h = parseInt(hour);
+//     const ampm = h >= 12 ? "PM" : "AM";
+//     h = h % 12 || 12;
+
+//     return `${h}:${min} ${ampm}`;
+//   };
+
+//   const handleChange = (field, value) => {
+//     setForm((prev) => ({ ...prev, [field]: value }));
+//   };
+
+//   const handleSubmit = () => {
+//     if (!form.name || !form.startTime || !form.endTime) {
+//       alert("Fill required fields");
+//       return;
+//     }
+
+//     const updatedService = {
+//       id: form.id,
+//       day: form.day.toLowerCase(),
+//       name: form.name,
+//       time: `${formatTimeTo12Hr(form.startTime)} - ${formatTimeTo12Hr(form.endTime)}`,
+//       location: form.location,
+//       description: form.description,
+//       requiresFather: form.requiresFather,
+//       fatherName: form.fatherName,
+//     };
+
+//     onSave(updatedService);
+//   };
+
+//   if (!isOpen) return null;
+
+//   return (
+//     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+//       <div className="bg-white rounded-lg w-full max-w-2xl mx-4 shadow-xl max-h-[90vh] overflow-y-auto">
+        
+//         {/* Modal Header */}
+//         <div className="bg-yellow-500 px-6 py-4 rounded-t-lg flex justify-between items-center sticky top-0">
+//           <h3 className="text-lg font-semibold text-white">Edit Service</h3>
+//           <button onClick={onClose} className="text-white hover:text-gray-200 transition-colors">
+//             <FiX size={20} />
+//           </button>
+//         </div>
+        
+//         {/* Modal Body */}
+//         <div className="p-6">
+//           <div className="grid grid-cols-2 gap-4">
+//             {/* DAY */}
+//             <div className="col-span-2 sm:col-span-1">
+//               <label className="block text-xs font-medium text-gray-700 mb-1">Day</label>
+//               <select
+//                 value={form.day}
+//                 onChange={(e) => handleChange("day", e.target.value)}
+//                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-transparent bg-white capitalize"
+//               >
+//                 <option value="sunday">Sunday</option>
+//                 <option value="monday">Monday</option>
+//                 <option value="tuesday">Tuesday</option>
+//                 <option value="wednesday">Wednesday</option>
+//                 <option value="thursday">Thursday</option>
+//                 <option value="friday">Friday</option>
+//                 <option value="saturday">Saturday</option>
+//               </select>
+//             </div>
+
+//             {/* NAME */}
+//             <div className="col-span-2 sm:col-span-1">
+//               <label className="block text-xs font-medium text-gray-700 mb-1">Service Name</label>
+//               <input
+//                 placeholder="Service Name"
+//                 value={form.name}
+//                 onChange={(e) => handleChange("name", e.target.value)}
+//                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-transparent"
+//               />
+//             </div>
+
+//             {/* TIME PICKERS */}
+//             <div className="col-span-2">
+//               <label className="block text-xs font-medium text-gray-700 mb-1">Time</label>
+//               <div className="flex gap-3">
+//                 <div className="flex-1">
+//                   <input
+//                     type="time"
+//                     value={form.startTime}
+//                     onChange={(e) => handleChange("startTime", e.target.value)}
+//                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:yellow-blue-500 focus:border-transparent"
+//                   />
+//                   <p className="text-xs text-gray-400 mt-1">Start Time</p>
+//                 </div>
+//                 <div className="flex-1">
+//                   <input
+//                     type="time"
+//                     value={form.endTime}
+//                     onChange={(e) => handleChange("endTime", e.target.value)}
+//                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-transparent"
+//                   />
+//                   <p className="text-xs text-gray-400 mt-1">End Time</p>
+//                 </div>
+//               </div>
+
+//               {/* 🔥 DISPLAY AM/PM Preview */}
+//               {form.startTime && form.endTime && (
+//                 <div className="mt-2 bg-blue-50 rounded-lg px-3 py-2 border border-blue-100">
+//                   <span className="text-xs text-blue-700 font-medium">
+//                     {formatTimeTo12Hr(form.startTime)} - {formatTimeTo12Hr(form.endTime)}
+//                   </span>
+//                 </div>
+//               )}
+//             </div>
+
+//             {/* LOCATION */}
+//             <div className="col-span-2 sm:col-span-1">
+//               <label className="block text-xs font-medium text-gray-700 mb-1">Location</label>
+//               <input
+//                 placeholder="Location"
+//                 value={form.location}
+//                 onChange={(e) => handleChange("location", e.target.value)}
+//                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-transparent"
+//               />
+//             </div>
+
+//             {/* DESCRIPTION */}
+//             <div className="col-span-2 sm:col-span-1">
+//               <label className="block text-xs font-medium text-gray-700 mb-1">Description</label>
+//               <input
+//                 placeholder="Description"
+//                 value={form.description}
+//                 onChange={(e) => handleChange("description", e.target.value)}
+//                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-transparent"
+//               />
+//             </div>
+
+//             {/* FATHER */}
+//             <div className="col-span-2">
+//               <label className="flex items-center gap-2 cursor-pointer">
+//                 <input
+//                   type="checkbox"
+//                   checked={form.requiresFather}
+//                   onChange={(e) => handleChange("requiresFather", e.target.checked)}
+//                   className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+//                 />
+//                 <span className="text-sm text-gray-700">Needs Father Name</span>
+//               </label>
+
+//               {form.requiresFather && (
+//                 <div className="mt-2">
+//                   <input
+//                     placeholder="Father Name"
+//                     value={form.fatherName}
+//                     onChange={(e) => handleChange("fatherName", e.target.value)}
+//                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-transparent"
+//                   />
+//                 </div>
+//               )}
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Modal Footer */}
+//         <div className="px-6 py-4 bg-gray-50 rounded-b-lg flex justify-end gap-3 sticky bottom-0">
+//           <button
+//             onClick={onClose}
+//             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+//           >
+//             Cancel
+//           </button>
+//           <button
+//             onClick={handleSubmit}
+//             className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors shadow-sm"
+//           >
+//             Update
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+// import React, { useState, useEffect } from "react";
+// import { FiX } from "react-icons/fi";
+
+// export default function OrderOfServiceEditModal({ isOpen, onClose, onSave, data }) {
+//   const [form, setForm] = useState({
+//     firestoreId: null,  // ✅ Store the Firestore document ID
+//     day: "sunday",
+//     name: "",
+//     startTime: "",
+//     endTime: "",
+//     location: "",
+//     description: "",
+//     requiresFather: false,
+//     fatherName: "",
+//   });
+
+//   useEffect(() => {
+//     if (data) {
+//       console.log("Edit modal received data:", data);
+      
+//       let start = "";
+//       let end = "";
+      
+//       if (data.time) {
+//         if (data.time.includes("AM") || data.time.includes("PM")) {
+//           const [s, e] = data.time.split(" - ");
+//           start = convertTime12To24(s);
+//           end = convertTime12To24(e);
+//         } else {
+//           const [s, e] = data.time.split(" - ");
+//           start = s;
+//           end = e;
+//         }
+//       }
+      
+//       setForm({
+//         firestoreId: data.firestoreId,  // ✅ Store the Firestore ID
+//         day: data.day || "sunday",
+//         name: data.name || "",
+//         startTime: start || "",
+//         endTime: end || "",
+//         location: data.location || "",
+//         description: data.description || "",
+//         requiresFather: data.requiresFather || false,
+//         fatherName: data.fatherName || "",
+//       });
+//     }
+//   }, [data]);
+
+//   const convertTime12To24 = (time12h) => {
+//     if (!time12h) return "";
+    
+//     const [time, modifier] = time12h.split(" ");
+//     let [hours, minutes] = time.split(":");
+    
+//     if (hours === "12") {
+//       hours = "00";
+//     }
+//     if (modifier === "PM") {
+//       hours = parseInt(hours, 10) + 12;
+//     }
+    
+//     return `${hours.toString().padStart(2, "0")}:${minutes}`;
+//   };
+
+//   const formatTimeTo12Hr = (time) => {
+//     if (!time) return "";
+
+//     const [hour, min] = time.split(":");
+//     let h = parseInt(hour);
+//     const ampm = h >= 12 ? "PM" : "AM";
+//     h = h % 12 || 12;
+
+//     return `${h}:${min} ${ampm}`;
+//   };
+
+//   const handleChange = (field, value) => {
+//     setForm((prev) => ({ ...prev, [field]: value }));
+//   };
+
+//   const handleSubmit = () => {
+//     if (!form.name || !form.startTime || !form.endTime) {
+//       alert("Fill required fields");
+//       return;
+//     }
+
+//     const updatedService = {
+//       firestoreId: form.firestoreId,  // ✅ Pass the Firestore ID
+//       day: form.day.toLowerCase(),
+//       name: form.name,
+//       time: `${formatTimeTo12Hr(form.startTime)} - ${formatTimeTo12Hr(form.endTime)}`,
+//       location: form.location,
+//       description: form.description,
+//       requiresFather: form.requiresFather,
+//       fatherName: form.fatherName,
+//     };
+
+//     console.log("Submitting update:", updatedService);
+//     onSave(updatedService);
+//   };
+
+//   if (!isOpen) return null;
+
+//   return (
+//     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+//       <div className="bg-white rounded-lg w-full max-w-2xl mx-4 shadow-xl max-h-[90vh] overflow-y-auto">
+        
+//         <div className="bg-yellow-500 px-6 py-4 rounded-t-lg flex justify-between items-center sticky top-0">
+//           <h3 className="text-lg font-semibold text-white">Edit Service</h3>
+//           <button onClick={onClose} className="text-white hover:text-gray-200 transition-colors">
+//             <FiX size={20} />
+//           </button>
+//         </div>
+        
+//         <div className="p-6">
+//           <div className="grid grid-cols-2 gap-4">
+//             <div className="col-span-2 sm:col-span-1">
+//               <label className="block text-xs font-medium text-gray-700 mb-1">Day</label>
+//               <select
+//                 value={form.day}
+//                 onChange={(e) => handleChange("day", e.target.value)}
+//                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-transparent bg-white capitalize"
+//               >
+//                 <option value="sunday">Sunday</option>
+//                 <option value="monday">Monday</option>
+//                 <option value="tuesday">Tuesday</option>
+//                 <option value="wednesday">Wednesday</option>
+//                 <option value="thursday">Thursday</option>
+//                 <option value="friday">Friday</option>
+//                 <option value="saturday">Saturday</option>
+//               </select>
+//             </div>
+
+//             <div className="col-span-2 sm:col-span-1">
+//               <label className="block text-xs font-medium text-gray-700 mb-1">Service Name</label>
+//               <input
+//                 placeholder="Service Name"
+//                 value={form.name}
+//                 onChange={(e) => handleChange("name", e.target.value)}
+//                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-transparent"
+//               />
+//             </div>
+
+//             <div className="col-span-2">
+//               <label className="block text-xs font-medium text-gray-700 mb-1">Time</label>
+//               <div className="flex gap-3">
+//                 <div className="flex-1">
+//                   <input
+//                     type="time"
+//                     value={form.startTime}
+//                     onChange={(e) => handleChange("startTime", e.target.value)}
+//                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-transparent"
+//                   />
+//                   <p className="text-xs text-gray-400 mt-1">Start Time</p>
+//                 </div>
+//                 <div className="flex-1">
+//                   <input
+//                     type="time"
+//                     value={form.endTime}
+//                     onChange={(e) => handleChange("endTime", e.target.value)}
+//                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-transparent"
+//                   />
+//                   <p className="text-xs text-gray-400 mt-1">End Time</p>
+//                 </div>
+//               </div>
+
+//               {form.startTime && form.endTime && (
+//                 <div className="mt-2 bg-blue-50 rounded-lg px-3 py-2 border border-blue-100">
+//                   <span className="text-xs text-blue-700 font-medium">
+//                     {formatTimeTo12Hr(form.startTime)} - {formatTimeTo12Hr(form.endTime)}
+//                   </span>
+//                 </div>
+//               )}
+//             </div>
+
+//             <div className="col-span-2 sm:col-span-1">
+//               <label className="block text-xs font-medium text-gray-700 mb-1">Location</label>
+//               <input
+//                 placeholder="Location"
+//                 value={form.location}
+//                 onChange={(e) => handleChange("location", e.target.value)}
+//                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-transparent"
+//               />
+//             </div>
+
+//             <div className="col-span-2 sm:col-span-1">
+//               <label className="block text-xs font-medium text-gray-700 mb-1">Description</label>
+//               <input
+//                 placeholder="Description"
+//                 value={form.description}
+//                 onChange={(e) => handleChange("description", e.target.value)}
+//                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-transparent"
+//               />
+//             </div>
+
+//             <div className="col-span-2">
+//               <label className="flex items-center gap-2 cursor-pointer">
+//                 <input
+//                   type="checkbox"
+//                   checked={form.requiresFather}
+//                   onChange={(e) => handleChange("requiresFather", e.target.checked)}
+//                   className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+//                 />
+//                 <span className="text-sm text-gray-700">Needs Father Name</span>
+//               </label>
+
+//               {form.requiresFather && (
+//                 <div className="mt-2">
+//                   <input
+//                     placeholder="Father Name"
+//                     value={form.fatherName}
+//                     onChange={(e) => handleChange("fatherName", e.target.value)}
+//                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-transparent"
+//                   />
+//                 </div>
+//               )}
+//             </div>
+//           </div>
+//         </div>
+
+//         <div className="px-6 py-4 bg-gray-50 rounded-b-lg flex justify-end gap-3 sticky bottom-0">
+//           <button
+//             onClick={onClose}
+//             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+//           >
+//             Cancel
+//           </button>
+//           <button
+//             onClick={handleSubmit}
+//             className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors shadow-sm"
+//           >
+//             Update
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
 import React, { useState, useEffect } from "react";
 import { FiX } from "react-icons/fi";
 
 export default function OrderOfServiceEditModal({ isOpen, onClose, onSave, data }) {
   const [form, setForm] = useState({
-    id: null,
+    firestoreId: null,
     day: "sunday",
     name: "",
     startTime: "",
@@ -427,44 +918,23 @@ export default function OrderOfServiceEditModal({ isOpen, onClose, onSave, data 
     description: "",
     requiresFather: false,
     fatherName: "",
+    isSecondSaturday: false,  // ✅ NEW FIELD
   });
 
-  useEffect(() => {
-    if (data) {
-      // Check if time is already in AM/PM format or 24hr format
-      let start = "";
-      let end = "";
-      
-      if (data.time) {
-        // If time contains "AM" or "PM", it's already formatted
-        if (data.time.includes("AM") || data.time.includes("PM")) {
-          // Already formatted, split as is
-          const [s, e] = data.time.split(" - ");
-          start = convertTime12To24(s);
-          end = convertTime12To24(e);
-        } else {
-          // Raw 24hr format
-          const [s, e] = data.time.split(" - ");
-          start = s;
-          end = e;
-        }
-      }
-      
-      setForm({
-        id: data.id,
-        day: data.day || "sunday",
-        name: data.name || "",
-        startTime: start || "",
-        endTime: end || "",
-        location: data.location || "",
-        description: data.description || "",
-        requiresFather: data.requiresFather || false,
-        fatherName: data.fatherName || "",
-      });
-    }
-  }, [data]);
+  // Convert 24hr → AM/PM
+  const formatTime = (time) => {
+    if (!time) return "";
 
-  // Convert AM/PM to 24hr format for input field
+    const [hour, min] = time.split(":");
+    let h = parseInt(hour);
+    const ampm = h >= 12 ? "PM" : "AM";
+
+    h = h % 12 || 12;
+
+    return `${h}:${min} ${ampm}`;
+  };
+
+  // Convert AM/PM to 24hr format
   const convertTime12To24 = (time12h) => {
     if (!time12h) return "";
     
@@ -481,17 +951,39 @@ export default function OrderOfServiceEditModal({ isOpen, onClose, onSave, data 
     return `${hours.toString().padStart(2, "0")}:${minutes}`;
   };
 
-  // Convert 24hr to AM/PM for display
-  const formatTimeTo12Hr = (time) => {
-    if (!time) return "";
-
-    const [hour, min] = time.split(":");
-    let h = parseInt(hour);
-    const ampm = h >= 12 ? "PM" : "AM";
-    h = h % 12 || 12;
-
-    return `${h}:${min} ${ampm}`;
-  };
+  useEffect(() => {
+    if (data) {
+      console.log("Edit modal received data:", data);
+      
+      let start = "";
+      let end = "";
+      
+      if (data.time) {
+        if (data.time.includes("AM") || data.time.includes("PM")) {
+          const [s, e] = data.time.split(" - ");
+          start = convertTime12To24(s);
+          end = convertTime12To24(e);
+        } else {
+          const [s, e] = data.time.split(" - ");
+          start = s;
+          end = e;
+        }
+      }
+      
+      setForm({
+        firestoreId: data.firestoreId || data.id,
+        day: data.day || "sunday",
+        name: data.name || "",
+        startTime: start || "",
+        endTime: end || "",
+        location: data.location || "",
+        description: data.description || "",
+        requiresFather: data.requiresFather || false,
+        fatherName: data.fatherName || "",
+        isSecondSaturday: data.isSecondSaturday || false,  // ✅ LOAD THIS FIELD
+      });
+    }
+  }, [data]);
 
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -504,16 +996,20 @@ export default function OrderOfServiceEditModal({ isOpen, onClose, onSave, data 
     }
 
     const updatedService = {
-      id: form.id,
+      firestoreId: form.firestoreId,
+      id: form.firestoreId,
       day: form.day.toLowerCase(),
       name: form.name,
-      time: `${formatTimeTo12Hr(form.startTime)} - ${formatTimeTo12Hr(form.endTime)}`,
+      time: `${formatTime(form.startTime)} - ${formatTime(form.endTime)}`,
       location: form.location,
       description: form.description,
       requiresFather: form.requiresFather,
       fatherName: form.fatherName,
+      isSecondSaturday: form.isSecondSaturday,  // ✅ SAVE THIS FIELD
+      updatedAt: new Date().toISOString()
     };
 
+    console.log("Submitting update:", updatedService);
     onSave(updatedService);
   };
 
@@ -572,7 +1068,7 @@ export default function OrderOfServiceEditModal({ isOpen, onClose, onSave, data 
                     type="time"
                     value={form.startTime}
                     onChange={(e) => handleChange("startTime", e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:yellow-blue-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-transparent"
                   />
                   <p className="text-xs text-gray-400 mt-1">Start Time</p>
                 </div>
@@ -587,11 +1083,10 @@ export default function OrderOfServiceEditModal({ isOpen, onClose, onSave, data 
                 </div>
               </div>
 
-              {/* 🔥 DISPLAY AM/PM Preview */}
               {form.startTime && form.endTime && (
                 <div className="mt-2 bg-blue-50 rounded-lg px-3 py-2 border border-blue-100">
                   <span className="text-xs text-blue-700 font-medium">
-                    {formatTimeTo12Hr(form.startTime)} - {formatTimeTo12Hr(form.endTime)}
+                    {formatTime(form.startTime)} - {formatTime(form.endTime)}
                   </span>
                 </div>
               )}
@@ -619,6 +1114,24 @@ export default function OrderOfServiceEditModal({ isOpen, onClose, onSave, data 
               />
             </div>
 
+            {/* ✅ 2ND SATURDAY OPTION - Only show when Saturday is selected */}
+            {form.day === "saturday" && (
+              <div className="col-span-2">
+                <label className="flex items-center gap-3 cursor-pointer p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                  <input
+                    type="checkbox"
+                    checked={form.isSecondSaturday}
+                    onChange={(e) => handleChange("isSecondSaturday", e.target.checked)}
+                    className="w-4 h-4 text-yellow-600 border-gray-300 rounded focus:ring-yellow-500"
+                  />
+                  <div>
+                    <span className="text-sm font-medium text-gray-700">2nd Saturday Special Service</span>
+                    <p className="text-xs text-gray-500">This service will ONLY show on the 2nd Saturday of each month</p>
+                  </div>
+                </label>
+              </div>
+            )}
+
             {/* FATHER */}
             <div className="col-span-2">
               <label className="flex items-center gap-2 cursor-pointer">
@@ -626,7 +1139,7 @@ export default function OrderOfServiceEditModal({ isOpen, onClose, onSave, data 
                   type="checkbox"
                   checked={form.requiresFather}
                   onChange={(e) => handleChange("requiresFather", e.target.checked)}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-yellow-500"
                 />
                 <span className="text-sm text-gray-700">Needs Father Name</span>
               </label>
@@ -637,7 +1150,7 @@ export default function OrderOfServiceEditModal({ isOpen, onClose, onSave, data 
                     placeholder="Father Name"
                     value={form.fatherName}
                     onChange={(e) => handleChange("fatherName", e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               )}

@@ -1717,6 +1717,12 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
 import { FiSave, FiEdit2, FiPhone, FiCalendar, FiHeart, FiCamera, FiMapPin, FiUser, FiUsers } from "react-icons/fi";
+import { auth, db } from "../../firebase";
+import { doc, updateDoc } from "firebase/firestore";
+import { getDoc } from "firebase/firestore";
+import { useEffect } from "react";
+
+
 
 const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(true);
@@ -1745,6 +1751,57 @@ const ProfilePage = () => {
       setErrors({ ...errors, [name]: "" });
     }
   };
+
+  useEffect(() => {
+  const loadProfile = async () => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const snap = await getDoc(doc(db, "users", user.uid));
+
+    // if (snap.exists()) {
+    //   const data = snap.data();
+
+    //   setProfileData({
+    //     fullName: data.name || "",
+    //     gender: data.gender || "",
+    //     address: data.address || "",
+    //     whatsappNumber: data.phone || "",
+    //     dob: data.dob || "",
+    //     anniversaryDate: data.anniversary || "",
+    //     churchFamilyNumber: data.churchFamilyNumber || "",
+    //     photo: null,
+    //     photoPreview: null,
+    //   });
+    // }
+    if (snap.exists()) {
+  const data = snap.data();
+
+  setProfileData({
+    fullName: data.name || "",
+    gender: data.gender || "",
+    address: data.address || "",
+    whatsappNumber: data.phone || "",
+    dob: data.dob || "",
+    anniversaryDate: data.anniversary || "",
+    churchFamilyNumber: data.churchFamilyNumber || "",
+    photo: null,
+    photoPreview: null,
+  });
+
+  // ✅ ONLY mark saved if FULL DATA exists
+  if (data.name && data.phone && data.dob) {
+    setIsEditing(false);
+    setIsSaved(true);
+  } else {
+    setIsEditing(true);
+    setIsSaved(false);
+  }
+}
+  };
+
+  loadProfile();
+}, []);
 
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
@@ -1786,16 +1843,40 @@ const ProfilePage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSave = () => {
-    if (validateForm()) {
-      toast.success("Profile saved successfully! 🎉");
-      setIsEditing(false);
-      setIsSaved(true);
-      console.log("Profile Data:", profileData);
-    } else {
-      toast.error("Please fill all required fields");
+  const handleSave = async () => {
+  if (!validateForm()) {
+    toast.error("Please fill all required fields");
+    return;
+  }
+
+  try {
+    const user = auth.currentUser;
+
+    if (!user) {
+      toast.error("User not logged in");
+      return;
     }
-  };
+
+    await updateDoc(doc(db, "users", user.uid), {
+      name: profileData.fullName,
+      gender: profileData.gender,
+      address: profileData.address,
+      phone: profileData.whatsappNumber,
+      dob: profileData.dob,
+      anniversary: profileData.anniversaryDate,
+      churchFamilyNumber: profileData.churchFamilyNumber,
+    });
+
+    toast.success("Profile saved successfully 🎉");
+
+    setIsEditing(false);
+    setIsSaved(true);
+
+  } catch (error) {
+    console.log(error);
+    toast.error("Failed to save profile");
+  }
+};
 
   const handleEdit = () => {
     setIsEditing(true);

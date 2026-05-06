@@ -252,7 +252,7 @@ const getTitle = () => {
               >
                 <div className="px-4 py-2 border-b border-gray-100">
                   <p className="text-sm font-semibold text-gray-800">Admin User</p>
-                  <p className="text-xs text-gray-400">admin@example.com</p>
+                  <p className="text-xs text-gray-400">admin@church.com</p>
                 </div>
                 <div className="py-1">
                   {/* <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">

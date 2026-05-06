@@ -343,6 +343,156 @@
 //   );
 // }
 
+// import { useState, useEffect } from "react";
+// import { X } from "lucide-react";
+
+// export default function AnnouncementEditModal({ isOpen, onClose, onSave, data }) {
+//   const [formData, setFormData] = useState({
+//     id: null,
+//     name: "",
+//     dob: "",
+//     place: "",
+//     details: "",
+//     date: "",
+//   });
+
+//   // LOAD DATA TO EDIT
+//   useEffect(() => {
+//     if (data) {
+//       setFormData({
+//         id: data.id,
+//         name: data.name || "",
+//         dob: data.dob || "",
+//         place: data.place || "",
+//         details: data.details || "",
+//         date: data.date || "",
+//       });
+//     }
+//   }, [data]);
+
+//   const handleChange = (field, value) => {
+//     setFormData(prev => ({ ...prev, [field]: value }));
+//   };
+
+//   const handleSubmit = () => {
+//     if (!formData.name || !formData.dob || !formData.place) {
+//       alert("Please fill all required fields");
+//       return;
+//     }
+
+//     onSave(formData);
+//   };
+
+//   if (!isOpen) return null;
+
+//   return (
+//     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+//       <div className="bg-white rounded-lg w-full max-w-xl mx-4 shadow-xl max-h-[90vh] overflow-y-auto">
+        
+//         {/* HEADER */}
+//         <div className="bg-yellow-500 px-5 py-3 rounded-t-lg flex justify-between items-center sticky top-0">
+//           <h3 className="text-sm font-semibold text-white">Edit Announcement</h3>
+//           <button onClick={onClose} className="text-white hover:text-gray-200">
+//             <X size={16} />
+//           </button>
+//         </div>
+
+//         {/* BODY */}
+//         <div className="p-4">
+//           {/* NAME + DOB */}
+//           <div className="grid grid-cols-2 gap-3 mb-3">
+//             <div>
+//               <label className="block text-xs font-medium text-gray-700 mb-1.5">
+//                 Name <span className="text-red-500">*</span>
+//               </label>
+//               <input
+//                 placeholder="Enter name"
+//                 value={formData.name}
+//                 onChange={(e) => handleChange("name", e.target.value)}
+//                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500"
+//                 required
+//               />
+//             </div>
+
+//             <div>
+//               <label className="block text-xs font-medium text-gray-700 mb-1.5">
+//                 DOB <span className="text-red-500">*</span>
+//               </label>
+//               <input
+//                 type="date"
+//                 value={formData.dob}
+//                 onChange={(e) => handleChange("dob", e.target.value)}
+//                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500"
+//                 required
+//               />
+//             </div>
+//           </div>
+
+//           {/* PLACE + DATE */}
+//           <div className="grid grid-cols-2 gap-3 mb-3">
+//             <div>
+//               <label className="block text-xs font-medium text-gray-700 mb-1.5">
+//                 Place <span className="text-red-500">*</span>
+//               </label>
+//               <input
+//                 placeholder="Enter place"
+//                 value={formData.place}
+//                 onChange={(e) => handleChange("place", e.target.value)}
+//                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500"
+//                 required
+//               />
+//             </div>
+
+//             <div>
+//               <label className="block text-xs font-medium text-gray-700 mb-1.5">
+//                 Date <span className="text-red-500">*</span>
+//               </label>
+//               <input
+//                 type="date"
+//                 value={formData.date}
+//                 onChange={(e) => handleChange("date", e.target.value)}
+//                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500"
+//                 required
+//               />
+//             </div>
+//           </div>
+
+//           {/* DETAILS */}
+//           <div>
+//             <label className="block text-xs font-medium text-gray-700 mb-1.5">
+//               Details
+//             </label>
+//             <textarea
+//               rows="3"
+//               placeholder="Enter details"
+//               value={formData.details}
+//               onChange={(e) => handleChange("details", e.target.value)}
+//               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500"
+//             />
+//           </div>
+//         </div>
+
+//         {/* FOOTER */}
+//         <div className="px-5 py-3 bg-gray-50 rounded-b-lg flex justify-end gap-3 sticky bottom-0">
+//           <button
+//             onClick={onClose}
+//             className="px-4 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+//           >
+//             Cancel
+//           </button>
+//           <button
+//             onClick={handleSubmit}
+//             className="px-4 py-1.5 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 shadow-sm transition-colors"
+//           >
+//             Update Announcement
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 
@@ -360,7 +510,7 @@ export default function AnnouncementEditModal({ isOpen, onClose, onSave, data })
   useEffect(() => {
     if (data) {
       setFormData({
-        id: data.id,
+        id: data.id,  // This is the Firestore document ID (string)
         name: data.name || "",
         dob: data.dob || "",
         place: data.place || "",
@@ -380,6 +530,7 @@ export default function AnnouncementEditModal({ isOpen, onClose, onSave, data })
       return;
     }
 
+    // Don't send the id field separately - keep it in the object
     onSave(formData);
   };
 

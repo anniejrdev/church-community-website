@@ -850,11 +850,318 @@
 //   );
 // }
 
-import { useState, useEffect } from "react";
-import { X, Upload } from "lucide-react";
+// import { useState, useEffect } from "react";
+// import { X, Upload } from "lucide-react";
+// import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+// import { db } from "../../../firebase";
+// // import { collection, addDoc } from "firebase/firestore";
+// import { collection, addDoc } from "firebase/firestore";
 
-export default function EventAddModal({ isOpen, onClose, onSave }) {
-  const [categories, setCategories] = useState([]);
+// export default function EventAddModal({ isOpen, onClose, onSave,categories }) {
+  
+//   const [formData, setFormData] = useState({
+//     section: "",
+//     title: "",
+//     description: "",
+//     highlight: "",
+//     date: "",
+//     image: ""
+//   });
+//   const [imagePreview, setImagePreview] = useState("");
+
+//   // LOAD CATEGORIES
+ 
+
+//   // SET CURRENT DATE
+//   useEffect(() => {
+//     const today = new Date().toISOString().split("T")[0];
+//     setFormData(prev => ({ ...prev, date: today }));
+//   }, []);
+
+//   // const handleImageUpload = (e) => {
+//   //   const file = e.target.files[0];
+//   //   if (file) {
+//   //     const reader = new FileReader();
+//   //     reader.onloadend = () => {
+//   //       setImagePreview(reader.result);
+//   //       setFormData({ ...formData, image: reader.result });
+//   //     };
+//   //     reader.readAsDataURL(file);
+//   //   }
+//   // };
+// const handleImageUpload = async (file) => {
+//   try {
+//     const storage = getStorage();
+
+//     const fileRef = ref(storage, `events/${Date.now()}_${file.name}`);
+
+//     await uploadBytes(fileRef, file);
+
+//     const url = await getDownloadURL(fileRef);
+
+//     return url;
+
+//   } catch (error) {
+//     console.log(error);
+//     return "";
+//   }
+// };
+
+// const uploadToCloudinary = async (file) => {
+//   const formData = new FormData();
+//   formData.append("file", file);
+//   formData.append("upload_preset", "event_upload");
+
+//   try {
+//     const res = await fetch(
+//       "https://api.cloudinary.com/v1_1/ddqklsfmc/image/upload",
+//       {
+//         method: "POST",
+//         body: formData,
+//       }
+//     );
+
+//     const data = await res.json();
+
+//     return data.secure_url; // ✅ image URL
+
+//   } catch (error) {
+//     console.log(error);
+//     return "";
+//   }
+// };
+
+// // const onFileChange = async (e) => {
+// //   const file = e.target.files[0];
+
+// //   if (file) {
+// //     const url = await handleImageUpload(file);
+
+// //     setFormData(prev => ({
+// //       ...prev,
+// //       image: url   // 🔥 STORE URL NOT BASE64
+// //     }));
+
+// //     setImagePreview(URL.createObjectURL(file)); // preview only
+// //   }
+// // };
+
+// const handleImageChange = async (e) => {
+//   const file = e.target.files[0];
+//   if (!file) return;
+
+//   // preview
+//   setImagePreview(URL.createObjectURL(file));
+
+//   // upload to cloudinary
+//   const url = await uploadToCloudinary(file);
+
+//   setFormData((prev) => ({
+//     ...prev,
+//     image: url,   // 🔥 store URL
+//   }));
+// };
+
+//   const handleChange = (field, value) => {
+//     setFormData(prev => ({ ...prev, [field]: value }));
+//   };
+
+//   const handleSubmit = () => {
+//     if (!formData.section || !formData.title || !formData.description) {
+//       alert("Please fill all required fields");
+//       return;
+//     }
+
+//     const newEvent = {
+//       id: Date.now(),
+//       ...formData,
+//       createdAt: new Date().toISOString()
+//     };
+
+//     onSave(newEvent);
+//     resetForm();
+//   };
+
+//   const resetForm = () => {
+//     setFormData({
+//       section: "",
+//       title: "",
+//       description: "",
+//       highlight: "",
+//       date: new Date().toISOString().split("T")[0],
+//       image: ""
+//     });
+//     setImagePreview("");
+//   };
+
+//   if (!isOpen) return null;
+
+//   return (
+//     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+//       <div className="bg-white rounded-lg w-full max-w-xl mx-4 shadow-xl max-h-[85vh] overflow-y-auto">
+        
+//         {/* Header */}
+//         <div className="bg-yellow-500 px-4 py-2.5 rounded-t-lg flex justify-between items-center sticky top-0">
+//           <h3 className="text-sm font-semibold text-white">Add New Event</h3>
+//           <button onClick={onClose} className="text-white hover:text-gray-200">
+//             <X size={16} />
+//           </button>
+//         </div>
+        
+//         {/* Body */}
+//         <div className="mb-3 mt-2 px-3">
+//   <label className="block text-xs font-medium text-gray-700 mb-1">
+//     Event Image
+//   </label>
+//   <div className="flex items-center gap-3">
+//     {/* Dotted Circle - Image shows INSIDE */}
+//     <label className="cursor-pointer group">
+//       <input
+//         type="file"
+//         accept="image/*"
+//         onChange={handleImageChange}
+//         className="hidden"
+//       />
+//       <div className="relative">
+//         <div className="w-20 h-20 rounded-full border-2 border-dashed border-gray-300 bg-gray-50 flex items-center justify-center overflow-hidden group-hover:border-yellow-500 group-hover:bg-yellow-50 transition-all duration-200">
+//           {imagePreview ? (
+//             // Show image INSIDE the circle
+//             <img 
+//               src={imagePreview} 
+//               alt="Preview" 
+//               className="w-full h-full object-cover"
+//             />
+//           ) : (
+//             // Show camera icon when no image
+//             <svg className="w-7 h-7 text-gray-400 group-hover:text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+//               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+//             </svg>
+//           )}
+//         </div>
+//         {/* Small camera icon overlay on the circle when image exists */}
+//         {imagePreview && (
+//           <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+//             <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+//             </svg>
+//           </div>
+//         )}
+//       </div>
+//       <p className="text-[9px] text-center text-gray-400 mt-1 group-hover:text-yellow-600">
+//         {imagePreview ? "Change" : "Add Photo"}
+//       </p>
+//     </label>
+//   </div>
+
+
+//           {/* SECTION & DATE - ONE ROW */}
+//           <div className="grid grid-cols-2 gap-2 mb-2">
+//             {/* SECTION DROPDOWN */}
+//             <div>
+//               <label className="block text-xs font-medium text-gray-700 mb-1">
+//                 Event Section <span className="text-red-500">*</span>
+//               </label>
+//               <select
+//                 value={formData.section}
+//                 onChange={(e) => handleChange("section", e.target.value)}
+//                 className="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-yellow-500"
+//                 required
+//               >
+//                 <option value="">Select Section</option>
+//                 {categories.map(cat => (
+//                   <option key={cat.id} value={cat.name}>{cat.name}</option>
+//                 ))}
+//               </select>
+//             </div>
+
+//             {/* DATE */}
+//             <div>
+//               <label className="block text-xs font-medium text-gray-700 mb-1">
+//                 Event Date <span className="text-red-500">*</span>
+//               </label>
+//               <input
+//                 type="date"
+//                 value={formData.date}
+//                 onChange={(e) => handleChange("date", e.target.value)}
+//                 className="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-yellow-500"
+//                 required
+//               />
+//             </div>
+//           </div>
+
+//           {/* TITLE & DESCRIPTION - ONE ROW */}
+//           <div className="grid grid-cols-2 gap-2 mb-2">
+//             {/* TITLE */}
+//             <div>
+//               <label className="block text-xs font-medium text-gray-700 mb-1">
+//                 Event Title <span className="text-red-500">*</span>
+//               </label>
+//               <input
+//                 placeholder="Enter event title"
+//                 value={formData.title}
+//                 onChange={(e) => handleChange("title", e.target.value)}
+//                 className="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-yellow-500"
+//                 required
+//               />
+//             </div>
+
+//             {/* DESCRIPTION */}
+//             <div>
+//               <label className="block text-xs font-medium text-gray-700 mb-1">
+//                 Description <span className="text-red-500">*</span>
+//               </label>
+//               <textarea
+//                 rows="2"
+//                 placeholder="Event description"
+//                 value={formData.description}
+//                 onChange={(e) => handleChange("description", e.target.value)}
+//                 className="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-yellow-500"
+//                 required
+//               />
+//             </div>
+//           </div>
+
+//           {/* HIGHLIGHT - FULL WIDTH */}
+//           <div className="mb-2">
+//             <label className="block text-xs font-medium text-gray-700 mb-1">
+//               Highlight / Key Points
+//             </label>
+//             <textarea
+//               rows="3"
+//               placeholder="Special highlights or key points about this event"
+//               value={formData.highlight}
+//               onChange={(e) => handleChange("highlight", e.target.value)}
+//               className="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-yellow-500"
+//             />
+//           </div>
+//         </div>
+
+//         {/* Footer */}
+//         <div className="px-3 py-2 bg-gray-50 rounded-b-lg flex justify-end gap-2 sticky bottom-0">
+//           <button
+//             onClick={onClose}
+//             className="px-3 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+//           >
+//             Cancel
+//           </button>
+//           <button
+//             onClick={handleSubmit}
+//             className="px-3 py-1 text-xs font-medium text-white bg-green-600 rounded-md hover:bg-green-700 shadow-sm"
+//           >
+//             Save Event
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+import { useState, useEffect } from "react";
+import { X } from "lucide-react";
+
+export default function EventAddModal({ isOpen, onClose, onSave, categories }) {
+  
   const [formData, setFormData] = useState({
     section: "",
     title: "",
@@ -864,12 +1171,7 @@ export default function EventAddModal({ isOpen, onClose, onSave }) {
     image: ""
   });
   const [imagePreview, setImagePreview] = useState("");
-
-  // LOAD CATEGORIES
-  useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("eventCategories")) || [];
-    setCategories(data);
-  }, []);
+  const [uploading, setUploading] = useState(false);
 
   // SET CURRENT DATE
   useEffect(() => {
@@ -877,16 +1179,44 @@ export default function EventAddModal({ isOpen, onClose, onSave }) {
     setFormData(prev => ({ ...prev, date: today }));
   }, []);
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-        setFormData({ ...formData, image: reader.result });
-      };
-      reader.readAsDataURL(file);
+  const uploadToCloudinary = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "event_upload");
+
+    try {
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/ddqklsfmc/image/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await res.json();
+      return data.secure_url;
+    } catch (error) {
+      console.log(error);
+      return "";
     }
+  };
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // preview
+    setImagePreview(URL.createObjectURL(file));
+    setUploading(true);
+
+    // upload to cloudinary
+    const url = await uploadToCloudinary(file);
+    
+    setFormData((prev) => ({
+      ...prev,
+      image: url,
+    }));
+    setUploading(false);
   };
 
   const handleChange = (field, value) => {
@@ -899,9 +1229,21 @@ export default function EventAddModal({ isOpen, onClose, onSave }) {
       return;
     }
 
+    if (!formData.image) {
+      alert("Please upload an event image");
+      return;
+    }
+
+    console.log("Submitting event:", formData);
+
+    // ✅ Create event object (section already has the category name)
     const newEvent = {
-      id: Date.now(),
-      ...formData,
+      section: formData.section,  // This is "Youth Events", "Marriage Event", etc.
+      title: formData.title,
+      description: formData.description,
+      highlight: formData.highlight,
+      date: formData.date,
+      image: formData.image,
       createdAt: new Date().toISOString()
     };
 
@@ -937,38 +1279,47 @@ export default function EventAddModal({ isOpen, onClose, onSave }) {
         
         {/* Body */}
         <div className="p-3">
-          {/* IMAGE UPLOAD - MOVED TO TOP */}
+          {/* IMAGE UPLOAD */}
           <div className="mb-3">
             <label className="block text-xs font-medium text-gray-700 mb-1">
-              Event Image
+              Event Image <span className="text-red-500">*</span>
             </label>
             <div className="flex items-center gap-3">
-              <label className="cursor-pointer">
+              <label className="cursor-pointer group">
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={handleImageUpload}
+                  onChange={handleImageChange}
                   className="hidden"
+                  disabled={uploading}
                 />
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-2 text-center hover:border-yellow-500 transition-colors w-24">
-                  <Upload size={18} className="mx-auto text-gray-400 mb-1" />
-                  <span className="text-[10px] text-gray-500">Upload</span>
-                </div>
-              </label>
-              {imagePreview && (
                 <div className="relative">
-                  <img src={imagePreview} alt="Preview" className="w-14 h-14 object-cover rounded-lg" />
-                  <button
-                    onClick={() => {
-                      setImagePreview("");
-                      handleChange("image", "");
-                    }}
-                    className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5"
-                  >
-                    <X size={10} />
-                  </button>
+                  <div className="w-20 h-20 rounded-full border-2 border-dashed border-gray-300 bg-gray-50 flex items-center justify-center overflow-hidden group-hover:border-yellow-500 group-hover:bg-yellow-50 transition-all duration-200">
+                    {imagePreview ? (
+                      <img 
+                        src={imagePreview} 
+                        alt="Preview" 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <svg className="w-7 h-7 text-gray-400 group-hover:text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    )}
+                  </div>
+                  {imagePreview && (
+                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                      </svg>
+                    </div>
+                  )}
                 </div>
-              )}
+                <p className="text-[9px] text-center text-gray-400 mt-1 group-hover:text-yellow-600">
+                  {uploading ? "Uploading..." : (imagePreview ? "Change" : "Add Photo")}
+                </p>
+              </label>
             </div>
           </div>
 
@@ -987,7 +1338,9 @@ export default function EventAddModal({ isOpen, onClose, onSave }) {
               >
                 <option value="">Select Section</option>
                 {categories.map(cat => (
-                  <option key={cat.id} value={cat.name}>{cat.name}</option>
+                  <option key={cat.id} value={cat.name}>  {/* ✅ Use cat.name */}
+                    {cat.name}
+                  </option>
                 ))}
               </select>
             </div>
@@ -1015,6 +1368,7 @@ export default function EventAddModal({ isOpen, onClose, onSave }) {
                 Event Title <span className="text-red-500">*</span>
               </label>
               <input
+                type="text"
                 placeholder="Enter event title"
                 value={formData.title}
                 onChange={(e) => handleChange("title", e.target.value)}
@@ -1046,11 +1400,14 @@ export default function EventAddModal({ isOpen, onClose, onSave }) {
             </label>
             <textarea
               rows="3"
-              placeholder="Special highlights or key points about this event"
+              placeholder="Special highlights or key points about this event (one per line)"
               value={formData.highlight}
               onChange={(e) => handleChange("highlight", e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-yellow-500"
             />
+            <p className="text-[9px] text-gray-400 mt-1">
+              Tip: Enter each highlight on a new line
+            </p>
           </div>
         </div>
 
@@ -1064,9 +1421,10 @@ export default function EventAddModal({ isOpen, onClose, onSave }) {
           </button>
           <button
             onClick={handleSubmit}
-            className="px-3 py-1 text-xs font-medium text-white bg-green-600 rounded-md hover:bg-green-700 shadow-sm"
+            disabled={uploading}
+            className="px-3 py-1 text-xs font-medium text-white bg-green-600 rounded-md hover:bg-green-700 shadow-sm disabled:bg-gray-400"
           >
-            Save Event
+            {uploading ? "Uploading..." : "Save Event"}
           </button>
         </div>
       </div>

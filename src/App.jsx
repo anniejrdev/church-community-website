@@ -155,6 +155,8 @@ import PrayerRequest from "./pages/Prayer/PrayerRequest";
 import WhatsappFloat from "./components/WhatsappFloat";
 import Verses from "./pages/Verses/Verses";
 import Profile from "./pages/Profile/Profile";
+import AdminRoute from "./components/AdminRoute";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // ADMIN
 import AdminLayout from "./Layouts/AdminLayout";
@@ -192,78 +194,201 @@ import Loader from "./components/Admin/Loader";
 
 
 // ADMIN-ONLY LOADER WRAPPER
+// function AppContent() {
+//   const location = useLocation();
+//   const [loading, setLoading] = useState(false);
+
+//   // useEffect(() => {
+//   //   // ✅ ONLY ADMIN ROUTES
+//   //   if (location.pathname.startsWith("/admin")) {
+//   //     setLoading(true);
+
+//   //     const timer = setTimeout(() => {
+//   //       setLoading(false);
+//   //     }, 400);
+
+//   //     return () => clearTimeout(timer);
+//   //   }
+//   // }, [location]);
+
+//   useEffect(() => {
+//   const isAdmin = location.pathname.startsWith("/admin");
+//   const isLogout = location.pathname === "/admin/logout";
+
+//   if (isAdmin && !isLogout) {
+//     setLoading(true);
+
+//     const timer = setTimeout(() => {
+//       setLoading(false);
+//     }, 400);
+
+//     return () => clearTimeout(timer);
+//   }
+// }, [location]);
+//   return (
+//     <>
+//       {/*  Loader only for admin */}
+//       {/* {loading && location.pathname.startsWith("/admin") && <Loader />} */}
+//       {loading &&
+//   location.pathname.startsWith("/admin") &&
+//   location.pathname !== "/admin/logout" && <Loader />}
+
+//       <Routes>
+
+//         {/* PUBLIC ROUTES */}
+//         <Route
+//           path="/*"
+//           element={
+//             <>
+//               <Header />
+//               <Routes>
+//                 <Route path="/" element={<Home />} />
+//                 <Route path="/about" element={<AboutHome />} />
+//                 <Route path="/events" element={<Events />} />
+//                 <Route path="/services" element={<OrderServices />} />
+//                 <Route path="/gallery" element={<Gallery />} />
+//                 <Route path="/payment" element={<SponsorPayment />} />
+//                 <Route path="/contact" element={<ContactMe />} />
+//                 <Route path="/announcement-details" element={<AnnouncementDetails />} />
+//                 <Route path="/login" element={<Login />} />
+//                 <Route path="/register" element={<Register />} />
+//                 <Route path="/prayer-request" element={<PrayerRequest />} />
+//                 <Route path="/bible-verses" element={<Verses />} />
+//                 <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+//               </Routes>
+//               <WhatsappFloat />
+//               <Footer />
+//             </>
+//           }
+//         />
+
+//         {/* ADMIN ROUTES */}
+//         <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+//         <Route index element={<Navigate to="dashboard" />} />
+
+//           <Route path="dashboard" element={<Dashboard />} />
+
+//           <Route path="users" element={<UsersList />} />
+//           <Route path="users/edit/:id" element={<UsersEdit />} />
+
+//           <Route path="services" element={<OrderofServiceList />} />
+//           <Route path="services/add" element={<OrderOfServiceAdd />} />
+//           <Route path="services/edit/:id" element={<OrderOfServiceEdit />} />
+
+//           <Route path="prayer-requests" element={<PrayerRequestList />} />
+//           <Route path="prayer-requests/edit/:id" element={<PrayerRequestEdit />} />
+
+//           <Route path="events" element={<EventList />} />
+//           <Route path="events/add" element={<EventAdd />} />
+//           <Route path="events/edit/:id" element={<EventEdit />} />
+//           <Route path="events/section" element={<EventsSection />} />
+
+//           <Route path="announcements" element={<AnnounsmentList />} />
+//           <Route path="announcements/add" element={<AnnounsmentAdd />} />
+//           <Route path="announcements/edit/:id" element={<AnnounsmentEdit />} />
+
+//           <Route path="ministries" element={<MinistriesList />} />
+//           <Route path="ministries/add" element={<MinistriesAdd />} />
+//           <Route path="ministries/edit/:id" element={<MinistriesEdit />} />
+
+//           <Route path="gallery" element={<GalleryList />} />
+//           <Route path="gallery/section" element={<GallerySection />} />
+
+//           <Route path="sponsors" element={<SponsorList />} />
+//           <Route path="sponsors/edit/:id" element={<SponsorEdit />} />
+
+//           <Route path="contact" element={<ContactList />} />
+//           <Route path="contact/edit/:id" element={<ContactEdit />} />
+
+//           <Route path="bible-verses" element={<VerseList />} />
+//           <Route path="bible-verses/add" element={<VerseAdd />} />
+//           <Route path="bible-verses/edit/:id" element={<VerseEdit />} />
+
+//         </Route>
+
+//         {/* LOGOUT (NO HEADER / FOOTER) */}
+//         <Route path="/admin/logout" element={<Logout />} />
+
+//       </Routes>
+//     </>
+//   );
+// }
+import { Outlet } from "react-router-dom";
+
+function Layout() {
+  return (
+    <>
+      <Header />
+      <Outlet />   {/* 🔥 IMPORTANT */}
+      <WhatsappFloat />
+      <Footer />
+    </>
+  );
+}
+
 function AppContent() {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
 
-  // useEffect(() => {
-  //   // ✅ ONLY ADMIN ROUTES
-  //   if (location.pathname.startsWith("/admin")) {
-  //     setLoading(true);
-
-  //     const timer = setTimeout(() => {
-  //       setLoading(false);
-  //     }, 400);
-
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [location]);
-
   useEffect(() => {
-  const isAdmin = location.pathname.startsWith("/admin");
-  const isLogout = location.pathname === "/admin/logout";
+    const isAdmin = location.pathname.startsWith("/admin");
+    const isLogout = location.pathname === "/admin/logout";
 
-  if (isAdmin && !isLogout) {
-    setLoading(true);
+    if (isAdmin && !isLogout) {
+      setLoading(true);
 
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 400);
+      const timer = setTimeout(() => {
+        setLoading(false);
+      }, 400);
 
-    return () => clearTimeout(timer);
-  }
-}, [location]);
+      return () => clearTimeout(timer);
+    }
+  }, [location]);
+
   return (
     <>
-      {/*  Loader only for admin */}
-      {/* {loading && location.pathname.startsWith("/admin") && <Loader />} */}
       {loading &&
-  location.pathname.startsWith("/admin") &&
-  location.pathname !== "/admin/logout" && <Loader />}
+        location.pathname.startsWith("/admin") &&
+        location.pathname !== "/admin/logout" && <Loader />}
 
       <Routes>
 
-        {/* PUBLIC ROUTES */}
+        {/* ✅ PUBLIC LAYOUT */}
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="about" element={<AboutHome />} />
+          <Route path="events" element={<Events />} />
+          <Route path="services" element={<OrderServices />} />
+          <Route path="gallery" element={<Gallery />} />
+          <Route path="payment" element={<SponsorPayment />} />
+          <Route path="contact" element={<ContactMe />} />
+          <Route path="announcement-details" element={<AnnouncementDetails />} />
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+          <Route path="prayer-request" element={<PrayerRequest />} />
+          <Route path="bible-verses" element={<Verses />} />
+
+          {/* 🔐 PROTECTED */}
+          <Route
+            path="profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
+
+        {/* 🔐 ADMIN */}
         <Route
-          path="/*"
+          path="/admin"
           element={
-            <>
-              <Header />
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/about" element={<AboutHome />} />
-                <Route path="/events" element={<Events />} />
-                <Route path="/services" element={<OrderServices />} />
-                <Route path="/gallery" element={<Gallery />} />
-                <Route path="/payment" element={<SponsorPayment />} />
-                <Route path="/contact" element={<ContactMe />} />
-                <Route path="/announcement-details" element={<AnnouncementDetails />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/prayer-request" element={<PrayerRequest />} />
-                <Route path="/bible-verses" element={<Verses />} />
-                <Route path="/profile" element={<Profile />} />
-              </Routes>
-              <WhatsappFloat />
-              <Footer />
-            </>
+            <AdminRoute>
+              <AdminLayout />
+            </AdminRoute>
           }
-        />
-
-        {/* ADMIN ROUTES */}
-        <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<Navigate to="dashboard" />} />
-
+        >
+          <Route index element={<Navigate to="dashboard" />} />
           <Route path="dashboard" element={<Dashboard />} />
 
           <Route path="users" element={<UsersList />} />
@@ -301,10 +426,9 @@ function AppContent() {
           <Route path="bible-verses" element={<VerseList />} />
           <Route path="bible-verses/add" element={<VerseAdd />} />
           <Route path="bible-verses/edit/:id" element={<VerseEdit />} />
-
         </Route>
 
-        {/* LOGOUT (NO HEADER / FOOTER) */}
+        {/* LOGOUT */}
         <Route path="/admin/logout" element={<Logout />} />
 
       </Routes>
