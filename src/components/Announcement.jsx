@@ -2611,6 +2611,454 @@
 
 // export default Announcement;
 
+// import React, { useState, useEffect } from "react";
+// import { motion, AnimatePresence } from "framer-motion";
+// import { 
+//   FaXmark, 
+//   FaChurch, 
+//   FaBell, 
+//   FaCalendar,
+//   FaClock, 
+//   FaCross,
+//   FaChevronLeft,
+//   FaChevronRight,
+//   FaHeart,
+//   FaHandsPraying
+// } from "react-icons/fa6";
+// import { Link } from "react-router-dom";
+// import { collection, getDocs } from "firebase/firestore";
+// import { db } from "../firebase";
+
+// const Announcement = () => {
+//   const [isOpen, setIsOpen] = useState(true);
+//   const [currentService, setCurrentService] = useState(null);
+//   const [deathAnnouncements, setDeathAnnouncements] = useState([]);
+//   const [currentDeathIndex, setCurrentDeathIndex] = useState(0);
+//   const [loading, setLoading] = useState(true);
+//   const [services, setServices] = useState([]);
+
+//   useEffect(() => {
+//     loadData();
+//   }, []);
+
+//   const loadData = async () => {
+//     setLoading(true);
+//     await Promise.all([loadServices(), loadDeathAnnouncements()]);
+//     setLoading(false);
+//   };
+
+//   const loadServices = async () => {
+//     try {
+//       const snap = await getDocs(collection(db, "services"));
+//       const data = snap.docs.map(doc => ({
+//         id: doc.id,
+//         ...doc.data()
+//       }));
+//       console.log("✅ Loaded services:", data);
+//       setServices(data);
+      
+//       const nextService = getNextService(data);
+//       console.log("🎯 Next upcoming service:", nextService);
+//       setCurrentService(nextService);
+//     } catch (error) {
+//       console.error("Error loading services:", error);
+//     }
+//   };
+
+//   const loadDeathAnnouncements = async () => {
+//     try {
+//       const snap = await getDocs(collection(db, "announcements"));
+//       const data = snap.docs.map(doc => ({
+//         id: doc.id,
+//         ...doc.data()
+//       }));
+      
+//       const todayDate = new Date().toISOString().split('T')[0];
+//       const todayDeaths = data.filter(item => item.date === todayDate);
+//       const sortedDeaths = [...todayDeaths].sort((a, b) => 
+//         new Date(b.date) - new Date(a.date)
+//       );
+//       setDeathAnnouncements(sortedDeaths);
+//       setCurrentDeathIndex(0);
+      
+//     } catch (error) {
+//       console.error("Error loading death announcements:", error);
+//       setDeathAnnouncements([]);
+//     }
+//   };
+
+//   // Get the next upcoming service
+//   const getNextService = (servicesList) => {
+//     if (!servicesList || servicesList.length === 0) return null;
+    
+//     const now = new Date();
+//     const currentHour = now.getHours();
+//     const currentMinute = now.getMinutes();
+//     const currentTimeInMinutes = currentHour * 60 + currentMinute;
+    
+//     const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+//     const currentDayIndex = now.getDay();
+//     const currentDayName = days[currentDayIndex];
+    
+//     const parseTimeToMinutes = (timeStr) => {
+//       if (!timeStr) return null;
+      
+//       let startTime = timeStr;
+//       if (timeStr.includes(" - ")) {
+//         startTime = timeStr.split(" - ")[0];
+//       }
+      
+//       const match = startTime.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+//       if (!match) return null;
+      
+//       let hour = parseInt(match[1]);
+//       const minute = parseInt(match[2]);
+//       const period = match[3].toUpperCase();
+      
+//       if (period === "PM" && hour !== 12) hour += 12;
+//       if (period === "AM" && hour === 12) hour = 0;
+      
+//       return hour * 60 + minute;
+//     };
+    
+//     const getServiceDayName = (service) => {
+//       if (service.day) return service.day.toLowerCase();
+//       return null;
+//     };
+    
+//     const futureServices = [];
+    
+//     for (const service of servicesList) {
+//       const serviceDay = getServiceDayName(service);
+//       if (!serviceDay) continue;
+      
+//       const serviceTimeMinutes = parseTimeToMinutes(service.time);
+//       if (!serviceTimeMinutes) continue;
+      
+//       const serviceDayIndex = days.indexOf(serviceDay);
+//       if (serviceDayIndex === -1) continue;
+      
+//       let daysUntil = serviceDayIndex - currentDayIndex;
+//       if (daysUntil < 0) daysUntil += 7;
+      
+//       if (daysUntil === 0 && serviceTimeMinutes <= currentTimeInMinutes) {
+//         continue;
+//       }
+      
+//       futureServices.push({
+//         ...service,
+//         daysUntil,
+//         timeMinutes: serviceTimeMinutes,
+//         sortScore: daysUntil * 1440 + serviceTimeMinutes
+//       });
+//     }
+    
+//     futureServices.sort((a, b) => a.sortScore - b.sortScore);
+    
+//     return futureServices.length > 0 ? futureServices[0] : servicesList[0];
+//   };
+
+//   const formatDate = (dateString) => {
+//     if (!dateString) return "Date TBA";
+//     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+//     return new Date(dateString).toLocaleDateString('en-US', options);
+//   };
+
+//   const getServiceDate = () => {
+//     if (currentService && currentService.daysUntil !== undefined) {
+//       const today = new Date();
+//       const futureDate = new Date(today);
+//       futureDate.setDate(today.getDate() + currentService.daysUntil);
+//       return futureDate.toISOString().split('T')[0];
+//     }
+//     return new Date().toISOString().split('T')[0];
+//   };
+
+//   useEffect(() => {
+//     if (deathAnnouncements.length <= 1) return;
+    
+//     const interval = setInterval(() => {
+//       setCurrentDeathIndex((prevIndex) => 
+//         prevIndex === deathAnnouncements.length - 1 ? 0 : prevIndex + 1
+//       );
+//     }, 5000);
+    
+//     return () => clearInterval(interval);
+//   }, [deathAnnouncements.length]);
+
+//   const nextDeath = () => {
+//     if (deathAnnouncements.length === 0) return;
+//     setCurrentDeathIndex((prevIndex) => 
+//       prevIndex === deathAnnouncements.length - 1 ? 0 : prevIndex + 1
+//     );
+//   };
+
+//   const prevDeath = () => {
+//     if (deathAnnouncements.length === 0) return;
+//     setCurrentDeathIndex((prevIndex) => 
+//       prevIndex === 0 ? deathAnnouncements.length - 1 : prevIndex - 1
+//     );
+//   };
+
+//   const currentDeath = deathAnnouncements[currentDeathIndex];
+
+//   if (loading) {
+//     return null;
+//   }
+
+//   // If no service and no death announcements, don't show anything
+//   if (!currentService && deathAnnouncements.length === 0) {
+//     return null;
+//   }
+
+//   return (
+//     <AnimatePresence>
+//       {isOpen && (
+//         <motion.div
+//           initial={{ opacity: 0, y: 100, scale: 0.8 }}
+//           animate={{ opacity: 1, y: 0, scale: 1 }}
+//           exit={{ opacity: 0, y: 100, scale: 0.8 }}
+//           transition={{
+//             duration: 0.6,
+//             ease: [0.16, 1, 0.3, 1],
+//             scale: { duration: 0.4 },
+//           }}
+//           className="fixed z-50 bottom-6 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:max-w-md lg:max-w-lg xl:max-w-xl"
+//         >
+//           <div className="relative bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-2xl overflow-hidden border border-gray-200/70">
+//             <div className="absolute -top-3 -left-3 w-14 h-14 rounded-full bg-amber-500/10 flex items-center justify-center">
+//               <FaChurch className="text-amber-600 text-lg" />
+//             </div>
+
+//             <div className="flex flex-col md:flex-row">
+//               <div className="hidden md:block w-28 lg:w-48 flex-shrink-0">
+//                 <div className="relative h-full min-h-[220px]">
+//                   <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-transparent z-10"></div>
+//                   <img
+//                     src="https://plus.unsplash.com/premium_photo-1732030992711-27e178f00ec7?w=600&auto=format&fit=crop&q=60"
+//                     alt="Church Announcement"
+//                     className="h-full w-full object-cover"
+//                   />
+//                 </div>
+//               </div>
+
+//               <div className="p-4 md:p-5 flex-1">
+//                 {/* UPCOMING SERVICE SECTION */}
+//                 {currentService && (
+//                   <div className="mb-3">
+//                     <div className="flex items-start justify-between">
+//                       <div className="flex items-center">
+//                         <div className="p-1.5 rounded-lg bg-amber-500/10 mr-2">
+//                           <FaBell className="text-amber-600 text-sm" />
+//                         </div>
+//                         <h3 className="text-base font-bold text-gray-800 font-serif">
+//                           Upcoming Service
+//                         </h3>
+//                       </div>
+//                       <button
+//                         onClick={() => setIsOpen(false)}
+//                         className="ml-3 p-1 cursor-pointer rounded-full bg-gray-100 hover:bg-gray-200"
+//                       >
+//                         <FaXmark size={14} />
+//                       </button>
+//                     </div>
+
+//                     <h4 className="text-sm font-semibold text-gray-800 mt-1">
+//                       {currentService.name}
+//                     </h4>
+                    
+//                     <div className="flex items-center gap-3 mt-1.5 text-xs text-gray-500">
+//                       <div className="flex items-center gap-1">
+//                         <FaCalendar className="text-amber-600 text-xs" />
+//                         <span>{formatDate(getServiceDate())}</span>
+//                       </div>
+//                       <div className="flex items-center gap-1">
+//                         <FaClock className="text-amber-600 text-xs" />
+//                         <span>{currentService.time}</span>
+//                       </div>
+//                     </div>
+
+//                     <div className="flex mt-2">
+//                       <Link 
+//                         to="/announcement-details" 
+//                         state={{ 
+//                           announcement: { 
+//                             type: "service",
+//                             name: currentService.name,
+//                             title: currentService.name,
+//                             date: getServiceDate(),
+//                             time: currentService.time,
+//                             location: currentService.location,
+//                             description: currentService.description,
+//                             speaker: currentService.speaker || currentService.fatherName
+//                           } 
+//                         }}
+//                       >
+//                         <motion.button
+//                           whileHover={{ scale: 1.03 }}
+//                           whileTap={{ scale: 0.98 }}
+//                           className="px-2.5 py-1 bg-[#fe0000] text-white rounded-lg text-xs cursor-pointer font-medium"
+//                         >
+//                           Learn More
+//                         </motion.button>
+//                       </Link>
+//                     </div>
+//                   </div>
+//                 )}
+
+//                 {/* DIVIDER - Only if both sections exist */}
+//                 {currentService && deathAnnouncements.length > 0 && (
+//                   <div className="border-t border-gray-200 my-2"></div>
+//                 )}
+
+//                 {/* DEATH ANNOUNCEMENTS SECTION */}
+//                 {deathAnnouncements.length > 0 && currentDeath ? (
+//                   <div className="relative">
+//                     <div className="flex items-center mb-1.5">
+//                       <div className="p-1.5 rounded-lg bg-gray-100 mr-2">
+//                         <FaCross className="text-gray-600 text-xs" />
+//                       </div>
+//                       <h4 className="text-xs font-semibold text-gray-700">
+//                         In Loving Memory
+//                       </h4>
+//                     </div>
+
+//                     <div className="relative">
+//                       {deathAnnouncements.length === 1 ? (
+//                         <div>
+//                           <p className="text-gray-700 text-xs leading-relaxed">
+//                             <span className="font-semibold">{currentDeath.name}</span>
+//                             {currentDeath.age && `, Age ${currentDeath.age}`}
+//                             {currentDeath.place && `, ${currentDeath.place}`}
+//                           </p>
+//                           <p className="text-gray-500 text-xs mt-1 flex items-center gap-1">
+//                             <span>🕊️</span> May their soul rest in peace
+//                           </p>
+//                         </div>
+//                       ) : (
+//                         <>
+//                           <AnimatePresence mode="wait">
+//                             <motion.div
+//                               key={currentDeathIndex}
+//                               initial={{ opacity: 0, x: 20 }}
+//                               animate={{ opacity: 1, x: 0 }}
+//                               exit={{ opacity: 0, x: -20 }}
+//                               transition={{ duration: 0.3 }}
+//                             >
+//                               <p className="text-gray-700 text-xs leading-relaxed">
+//                                 <span className="font-semibold">{currentDeath.name}</span>
+//                                 {currentDeath.age && `, Age ${currentDeath.age}`}
+//                                 {currentDeath.place && `, ${currentDeath.place}`}
+//                               </p>
+//                               <p className="text-gray-500 text-xs mt-1 flex items-center gap-1">
+//                                 <span>🕊️</span> May their soul rest in peace
+//                               </p>
+//                             </motion.div>
+//                           </AnimatePresence>
+
+//                           <button
+//                             onClick={prevDeath}
+//                             className="absolute left-0 top-1/2 -translate-y-1/2 -ml-2 p-1 bg-white rounded-full shadow-md border border-gray-200 hover:bg-gray-50"
+//                           >
+//                             <FaChevronLeft size={10} className="text-gray-600" />
+//                           </button>
+//                           <button
+//                             onClick={nextDeath}
+//                             className="absolute right-0 top-1/2 -translate-y-1/2 -mr-2 p-1 bg-white rounded-full shadow-md border border-gray-200 hover:bg-gray-50"
+//                           >
+//                             <FaChevronRight size={10} className="text-gray-600" />
+//                           </button>
+
+//                           <div className="flex justify-center gap-1.5 mt-2">
+//                             {deathAnnouncements.map((_, idx) => (
+//                               <button
+//                                 key={idx}
+//                                 onClick={() => setCurrentDeathIndex(idx)}
+//                                 className={`transition-all duration-200 rounded-full ${
+//                                   idx === currentDeathIndex
+//                                     ? "w-1.5 h-1.5 bg-gray-600"
+//                                     : "w-1.5 h-1.5 bg-gray-300"
+//                                 }`}
+//                               />
+//                             ))}
+//                           </div>
+//                         </>
+//                       )}
+//                     </div>
+
+//                     <div className="flex mt-2">
+//                       <Link 
+//                         to="/announcement-details" 
+//                         state={{ 
+//                           announcement: { type: "death", ...currentDeath },
+//                           allDeathAnnouncements: deathAnnouncements
+//                         }}
+//                       >
+//                         <motion.button
+//                           whileHover={{ scale: 1.03 }}
+//                           whileTap={{ scale: 0.98 }}
+//                           className="px-2.5 py-1 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg text-xs font-medium"
+//                         >
+//                           Learn More
+//                         </motion.button>
+//                       </Link>
+//                     </div>
+//                   </div>
+//                 ) : (
+//                   // NO DEATH ANNOUNCEMENTS - Show peaceful message
+//                   currentService && (
+//                     <div className="py-2">
+//                       <div className="flex items-center gap-2 mb-1.5">
+//                         <div className="p-1.5 rounded-lg bg-amber-50">
+//                           <FaHandsPraying className="text-amber-500 text-sm" />
+//                         </div>
+//                         <h4 className="text-xs font-semibold text-amber-700">
+//                           Today's Blessing
+//                         </h4>
+//                       </div>
+//                       <div className="text-center py-2">
+//                         <FaHeart className="text-amber-400 text-lg mx-auto mb-1 animate-pulse" />
+//                         <p className="text-gray-600 text-xs leading-relaxed">
+//                           No death announcements for today.
+//                         </p>
+//                         <p className="text-gray-400 text-[10px] mt-1">
+//                           May God's peace be with you and your family.
+//                         </p>
+//                       </div>
+//                     </div>
+//                   )
+//                 )}
+
+//                 {/* If only death announcements exist (no service) */}
+//                 {!currentService && deathAnnouncements.length > 0 && (
+//                   <div className="flex items-start justify-between mb-2">
+//                     <div className="flex items-center">
+//                       <div className="p-1.5 rounded-lg bg-gray-100 mr-2">
+//                         <FaCross className="text-gray-600 text-sm" />
+//                       </div>
+//                       <h3 className="text-base font-bold text-gray-800 font-serif">
+//                         In Loving Memory
+//                       </h3>
+//                     </div>
+//                     <button
+//                       onClick={() => setIsOpen(false)}
+//                       className="ml-3 p-1 cursor-pointer rounded-full bg-gray-100 hover:bg-gray-200"
+//                     >
+//                       <FaXmark size={14} />
+//                     </button>
+//                   </div>
+//                 )}
+//               </div>
+//             </div>
+//           </div>
+//         </motion.div>
+//       )}
+//     </AnimatePresence>
+//   );
+// };
+
+// export default Announcement;
+
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -2621,9 +3069,7 @@ import {
   FaClock, 
   FaCross,
   FaChevronLeft,
-  FaChevronRight,
-  FaHeart,
-  FaHandsPraying
+  FaChevronRight
 } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { collection, getDocs } from "firebase/firestore";
@@ -2687,7 +3133,6 @@ const Announcement = () => {
     }
   };
 
-  // Get the next upcoming service
   const getNextService = (servicesList) => {
     if (!servicesList || servicesList.length === 0) return null;
     
@@ -2698,7 +3143,6 @@ const Announcement = () => {
     
     const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
     const currentDayIndex = now.getDay();
-    const currentDayName = days[currentDayIndex];
     
     const parseTimeToMinutes = (timeStr) => {
       if (!timeStr) return null;
@@ -2806,10 +3250,11 @@ const Announcement = () => {
     return null;
   }
 
-  // If no service and no death announcements, don't show anything
   if (!currentService && deathAnnouncements.length === 0) {
     return null;
   }
+
+  const hasDeathAnnouncements = deathAnnouncements.length > 0;
 
   return (
     <AnimatePresence>
@@ -2823,16 +3268,21 @@ const Announcement = () => {
             ease: [0.16, 1, 0.3, 1],
             scale: { duration: 0.4 },
           }}
-          className="fixed z-50 bottom-6 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:max-w-md lg:max-w-lg xl:max-w-xl"
+          className={`fixed z-50 bottom-6 left-4 right-4 md:left-auto md:right-6 md:bottom-6 ${
+            hasDeathAnnouncements 
+              ? "md:max-w-md lg:max-w-lg xl:max-w-xl" 
+              : "md:max-w-sm lg:max-w-md"
+          }`}
         >
           <div className="relative bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-2xl overflow-hidden border border-gray-200/70">
             <div className="absolute -top-3 -left-3 w-14 h-14 rounded-full bg-amber-500/10 flex items-center justify-center">
               <FaChurch className="text-amber-600 text-lg" />
             </div>
 
-            <div className="flex flex-col md:flex-row">
-              <div className="hidden md:block w-28 lg:w-48 flex-shrink-0">
-                <div className="relative h-full min-h-[220px]">
+            <div className="flex flex-row">
+              {/* Image sidebar - shows always, but with different sizes */}
+              <div className={`flex-shrink-0 ${hasDeathAnnouncements ? "w-28 lg:w-48" : "w-20 lg:w-28"}`}>
+                <div className="relative h-full min-h-[155px]">
                   <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-transparent z-10"></div>
                   <img
                     src="https://plus.unsplash.com/premium_photo-1732030992711-27e178f00ec7?w=600&auto=format&fit=crop&q=60"
@@ -2842,16 +3292,16 @@ const Announcement = () => {
                 </div>
               </div>
 
-              <div className="p-4 md:p-5 flex-1">
+              <div className={`p-4 md:p-5 flex-1 ${!hasDeathAnnouncements ? "md:p-3" : ""}`}>
                 {/* UPCOMING SERVICE SECTION */}
                 {currentService && (
-                  <div className="mb-3">
+                  <div className={!hasDeathAnnouncements ? "mb-0" : "mb-3"}>
                     <div className="flex items-start justify-between">
                       <div className="flex items-center">
                         <div className="p-1.5 rounded-lg bg-amber-500/10 mr-2">
                           <FaBell className="text-amber-600 text-sm" />
                         </div>
-                        <h3 className="text-base font-bold text-gray-800 font-serif">
+                        <h3 className={`font-bold text-gray-800 font-serif ${hasDeathAnnouncements ? "text-base" : "text-sm"}`}>
                           Upcoming Service
                         </h3>
                       </div>
@@ -2863,11 +3313,11 @@ const Announcement = () => {
                       </button>
                     </div>
 
-                    <h4 className="text-sm font-semibold text-gray-800 mt-1">
+                    <h4 className={`font-semibold text-gray-800 mt-1 ${hasDeathAnnouncements ? "text-sm" : "text-xs"}`}>
                       {currentService.name}
                     </h4>
                     
-                    <div className="flex items-center gap-3 mt-1.5 text-xs text-gray-500">
+                    <div className={`flex items-center gap-3 mt-1.5 text-gray-500 ${hasDeathAnnouncements ? "text-xs" : "text-[11px]"}`}>
                       <div className="flex items-center gap-1">
                         <FaCalendar className="text-amber-600 text-xs" />
                         <span>{formatDate(getServiceDate())}</span>
@@ -2897,7 +3347,7 @@ const Announcement = () => {
                         <motion.button
                           whileHover={{ scale: 1.03 }}
                           whileTap={{ scale: 0.98 }}
-                          className="px-2.5 py-1 bg-[#fe0000] text-white rounded-lg text-xs cursor-pointer font-medium"
+                          className={`${hasDeathAnnouncements ? "px-2.5 py-1 text-xs" : "px-2 py-0.5 text-[11px]"} bg-[#fe0000] text-white rounded-lg cursor-pointer font-medium`}
                         >
                           Learn More
                         </motion.button>
@@ -2907,12 +3357,12 @@ const Announcement = () => {
                 )}
 
                 {/* DIVIDER - Only if both sections exist */}
-                {currentService && deathAnnouncements.length > 0 && (
+                {currentService && hasDeathAnnouncements && (
                   <div className="border-t border-gray-200 my-2"></div>
                 )}
 
-                {/* DEATH ANNOUNCEMENTS SECTION */}
-                {deathAnnouncements.length > 0 && currentDeath ? (
+                {/* DEATH ANNOUNCEMENTS SECTION - Only show if there are death announcements */}
+                {hasDeathAnnouncements && currentDeath && (
                   <div className="relative">
                     <div className="flex items-center mb-1.5">
                       <div className="p-1.5 rounded-lg bg-gray-100 mr-2">
@@ -3004,33 +3454,10 @@ const Announcement = () => {
                       </Link>
                     </div>
                   </div>
-                ) : (
-                  // NO DEATH ANNOUNCEMENTS - Show peaceful message
-                  currentService && (
-                    <div className="py-2">
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <div className="p-1.5 rounded-lg bg-amber-50">
-                          <FaHandsPraying className="text-amber-500 text-sm" />
-                        </div>
-                        <h4 className="text-xs font-semibold text-amber-700">
-                          Today's Blessing
-                        </h4>
-                      </div>
-                      <div className="text-center py-2">
-                        <FaHeart className="text-amber-400 text-lg mx-auto mb-1 animate-pulse" />
-                        <p className="text-gray-600 text-xs leading-relaxed">
-                          No death announcements for today.
-                        </p>
-                        <p className="text-gray-400 text-[10px] mt-1">
-                          May God's peace be with you and your family.
-                        </p>
-                      </div>
-                    </div>
-                  )
                 )}
 
                 {/* If only death announcements exist (no service) */}
-                {!currentService && deathAnnouncements.length > 0 && (
+                {!currentService && hasDeathAnnouncements && (
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center">
                       <div className="p-1.5 rounded-lg bg-gray-100 mr-2">

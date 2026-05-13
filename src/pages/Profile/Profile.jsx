@@ -1712,6 +1712,908 @@
 
 // export default ProfilePage;
 
+// import React, { useState } from "react";
+// import { toast, ToastContainer } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+// import { motion } from "framer-motion";
+// import { FiSave, FiEdit2, FiPhone, FiCalendar, FiHeart, FiCamera, FiMapPin, FiUser, FiUsers } from "react-icons/fi";
+// import { auth, db } from "../../firebase";
+// import { doc, updateDoc } from "firebase/firestore";
+// import { getDoc } from "firebase/firestore";
+// import { useEffect } from "react";
+
+
+
+// const ProfilePage = () => {
+//   const [isEditing, setIsEditing] = useState(true);
+//   const [isSaved, setIsSaved] = useState(false);
+//   const [profileData, setProfileData] = useState({
+//     fullName: "",
+//     gender: "",
+//     address: "",
+//     whatsappNumber: "",
+//     dob: "",
+//     anniversaryDate: "",
+//     churchFamilyNumber: "",
+//     photo: null,
+//     photoPreview: null,
+//   });
+
+//   const [errors, setErrors] = useState({});
+
+//   const handleChange = (e) => {
+//     const { name, value } = e.target;
+//     setProfileData({
+//       ...profileData,
+//       [name]: value,
+//     });
+//     if (errors[name]) {
+//       setErrors({ ...errors, [name]: "" });
+//     }
+//   };
+
+//   useEffect(() => {
+//   const loadProfile = async () => {
+//     const user = auth.currentUser;
+//     if (!user) return;
+
+//     const snap = await getDoc(doc(db, "users", user.uid));
+
+//     // if (snap.exists()) {
+//     //   const data = snap.data();
+
+//     //   setProfileData({
+//     //     fullName: data.name || "",
+//     //     gender: data.gender || "",
+//     //     address: data.address || "",
+//     //     whatsappNumber: data.phone || "",
+//     //     dob: data.dob || "",
+//     //     anniversaryDate: data.anniversary || "",
+//     //     churchFamilyNumber: data.churchFamilyNumber || "",
+//     //     photo: null,
+//     //     photoPreview: null,
+//     //   });
+//     // }
+//     if (snap.exists()) {
+//   const data = snap.data();
+
+//   setProfileData({
+//     fullName: data.name || "",
+//     gender: data.gender || "",
+//     address: data.address || "",
+//     whatsappNumber: data.phone || "",
+//     dob: data.dob || "",
+//     anniversaryDate: data.anniversary || "",
+//     churchFamilyNumber: data.churchFamilyNumber || "",
+//     photo: null,
+//     photoPreview: null,
+//   });
+
+//   // ✅ ONLY mark saved if FULL DATA exists
+//   if (data.name && data.phone && data.dob) {
+//     setIsEditing(false);
+//     setIsSaved(true);
+//   } else {
+//     setIsEditing(true);
+//     setIsSaved(false);
+//   }
+// }
+//   };
+
+//   loadProfile();
+// }, []);
+
+//   const handlePhotoChange = (e) => {
+//     const file = e.target.files[0];
+//     if (file) {
+//       const reader = new FileReader();
+//       reader.onloadend = () => {
+//         setProfileData({
+//           ...profileData,
+//           photo: file,
+//           photoPreview: reader.result,
+//         });
+//       };
+//       reader.readAsDataURL(file);
+//     }
+//   };
+
+//   const validateForm = () => {
+//     const newErrors = {};
+
+//     if (!profileData.fullName.trim()) {
+//       newErrors.fullName = "Full name is required";
+//     }
+//     if (!profileData.gender) {
+//       newErrors.gender = "Gender is required";
+//     }
+//     if (!profileData.address.trim()) {
+//       newErrors.address = "Address is required";
+//     }
+//     if (!profileData.whatsappNumber.trim()) {
+//       newErrors.whatsappNumber = "WhatsApp number is required";
+//     } else if (!/^\d{10}$/.test(profileData.whatsappNumber)) {
+//       newErrors.whatsappNumber = "Enter valid 10-digit number";
+//     }
+//     if (!profileData.dob) {
+//       newErrors.dob = "Date of birth is required";
+//     }
+
+//     setErrors(newErrors);
+//     return Object.keys(newErrors).length === 0;
+//   };
+
+//   const handleSave = async () => {
+//   if (!validateForm()) {
+//     toast.error("Please fill all required fields");
+//     return;
+//   }
+
+//   try {
+//     const user = auth.currentUser;
+
+//     if (!user) {
+//       toast.error("User not logged in");
+//       return;
+//     }
+
+//     await updateDoc(doc(db, "users", user.uid), {
+//       name: profileData.fullName,
+//       gender: profileData.gender,
+//       address: profileData.address,
+//       phone: profileData.whatsappNumber,
+//       dob: profileData.dob,
+//       anniversary: profileData.anniversaryDate,
+//       churchFamilyNumber: profileData.churchFamilyNumber,
+//     });
+
+//     toast.success("Profile saved successfully 🎉");
+
+//     setIsEditing(false);
+//     setIsSaved(true);
+
+//   } catch (error) {
+//     console.log(error);
+//     toast.error("Failed to save profile");
+//   }
+// };
+
+//   const handleEdit = () => {
+//     setIsEditing(true);
+//     setIsSaved(false);
+//     toast.info("You can now edit your profile");
+//   };
+
+//   return (
+//     <div className="w-full">
+//       <ToastContainer theme="colored" />
+
+//       {/* Hero Section - Same style as Gallery page */}
+//       <motion.div 
+//         initial={{ opacity: 0 }}
+//         animate={{ opacity: 1 }}
+//         transition={{ duration: 0.5 }}
+//         className="w-full"
+//       >
+//         <div className="relative bg-[url('https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=1600&auto=format&fit=crop&q=60')] bg-cover bg-center h-screen flex items-center justify-center">
+//           <div className="absolute inset-0 bg-black/60"></div>
+//           <div className="relative z-10 text-center px-4">
+//             <motion.h1 
+//               initial={{ y: -30, opacity: 0 }}
+//               animate={{ y: 0, opacity: 1 }}
+//               transition={{ duration: 0.7, delay: 0.2 }}
+//               className="text-white text-5xl md:text-6xl font-bold"
+//             >
+//               MY PROFILE
+//             </motion.h1>
+//             <motion.p 
+//               initial={{ y: 30, opacity: 0 }}
+//               animate={{ y: 0, opacity: 1 }}
+//               transition={{ duration: 0.7, delay: 0.4 }}
+//               className="text-white text-lg md:text-xl mt-4 max-w-2xl mx-auto"
+//             >
+//               Manage your personal information and keep your profile up to date
+//             </motion.p>
+//           </div>
+//         </div>
+//       </motion.div>
+
+//       {/* Profile Form Section - No changes */}
+//       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+//         <motion.div
+//         initial={{ opacity: 0, y: 20 }}
+//         animate={{ opacity: 1, y: 0 }}
+//         transition={{ duration: 0.5 }}
+//         className="max-w-5xl w-full mt-12 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden"
+//       >
+//         {/* Header with Edit/Save Buttons */}
+//         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-yellow-50 to-orange-50">
+//           <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+//             My Profile
+//           </h2>
+          
+//           <div className="flex gap-3">
+//             {/* Save Button */}
+//             <motion.button
+//               whileHover={{ scale: 1.05 }}
+//               whileTap={{ scale: 0.95 }}
+//               onClick={handleSave}
+//               className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-green-500 to-green-600 rounded-lg text-white text-sm font-medium hover:shadow-lg transition-all"
+//             >
+//               <FiSave size={16} />
+//               Save
+//             </motion.button>
+
+//             {/* Edit Button - Enabled only after save */}
+//             <motion.button
+//               whileHover={{ scale: 1.05 }}
+//               whileTap={{ scale: 0.95 }}
+//               onClick={handleEdit}
+//               disabled={!isSaved}
+//               className={`flex items-center gap-2 px-5 py-2 rounded-lg text-white text-sm font-medium transition-all ${
+//                 !isSaved 
+//                   ? "bg-gray-400 cursor-not-allowed opacity-50" 
+//                   : "bg-gradient-to-r from-blue-500 to-blue-600 hover:shadow-lg"
+//               }`}
+//             >
+//               <FiEdit2 size={16} />
+//               Edit Profile
+//             </motion.button>
+//           </div>
+//         </div>
+
+//         {/* Two Column Layout */}
+//         <div className="grid md:grid-cols-2 gap-6 p-6">
+          
+//           {/* LEFT SIDE - Profile Pic, Name, Gender, Address */}
+//           <div className="space-y-5">
+//             {/* Photo Upload - Card Style */}
+//             <div className="flex justify-center">
+//               <div className="relative">
+//                 <div className="w-32 h-32 rounded-full bg-gradient-to-br from-yellow-400 to-orange-400 p-0.5">
+//                   <div className="w-full h-full rounded-full bg-white overflow-hidden flex items-center justify-center">
+//                     {profileData.photoPreview ? (
+//                       <img
+//                         src={profileData.photoPreview}
+//                         alt="Profile"
+//                         className="w-full h-full object-cover"
+//                       />
+//                     ) : (
+//                       <FiUser className="text-5xl text-gray-400" />
+//                     )}
+//                   </div>
+//                 </div>
+                
+//                 {/* Photo upload only visible when editing */}
+//                 {isEditing && (
+//                   <label className="absolute bottom-1 right-1 p-1.5 bg-yellow-500 rounded-full cursor-pointer hover:bg-yellow-600 transition shadow-lg">
+//                     <FiCamera size={14} className="text-white" />
+//                     <input
+//                       type="file"
+//                       accept="image/*"
+//                       onChange={handlePhotoChange}
+//                       className="hidden"
+//                     />
+//                   </label>
+//                 )}
+//               </div>
+//             </div>
+
+//             {/* Full Name */}
+//             <div>
+//               <label className="block text-sm font-medium text-gray-700 mb-1">
+//                 <FiUser className="inline mr-1" size={12} /> Full Name <span className="text-red-500">*</span>
+//               </label>
+//               <input
+//                 type="text"
+//                 name="fullName"
+//                 value={profileData.fullName}
+//                 onChange={handleChange}
+//                 disabled={!isEditing}
+//                 placeholder="Enter your full name"
+//                 className={`w-full p-2.5 rounded-lg border ${
+//                   errors.fullName ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50"
+//                 } outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 text-sm ${
+//                   !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
+//                 }`}
+//               />
+//             </div>
+
+//             {/* Gender */}
+//             <div>
+//               <label className="block text-sm font-medium text-gray-700 mb-2">
+//                 Gender <span className="text-red-500">*</span>
+//               </label>
+//               <div className="flex gap-6">
+//                 {["Male", "Female", "Other"].map((option) => (
+//                   <label key={option} className="flex items-center gap-2 cursor-pointer">
+//                     <input
+//                       type="radio"
+//                       name="gender"
+//                       value={option}
+//                       checked={profileData.gender === option}
+//                       onChange={handleChange}
+//                       disabled={!isEditing}
+//                       className="w-4 h-4 text-yellow-500 focus:ring-yellow-500"
+//                     />
+//                     <span className={`text-sm text-gray-700 ${!isEditing ? "opacity-60" : ""}`}>{option}</span>
+//                   </label>
+//                 ))}
+//               </div>
+//             </div>
+
+//             {/* Address */}
+//             <div>
+//               <label className="block text-sm font-medium text-gray-700 mb-1">
+//                 <FiMapPin className="inline mr-1" size={12} /> Address <span className="text-red-500">*</span>
+//               </label>
+//               <textarea
+//                 name="address"
+//                 value={profileData.address}
+//                 onChange={handleChange}
+//                 disabled={!isEditing}
+//                 rows="3"
+//                 placeholder="Enter your complete address"
+//                 className={`w-full p-2.5 rounded-lg border ${
+//                   errors.address ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50"
+//                 } outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 text-sm resize-none ${
+//                   !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
+//                 }`}
+//               />
+//             </div>
+//           </div>
+
+//           {/* RIGHT SIDE */}
+//           <div className="space-y-5">
+//             {/* WhatsApp Number */}
+//             <div>
+//               <label className="block text-sm font-medium text-gray-700 mb-1">
+//                 <FiPhone className="inline mr-1" size={12} /> WhatsApp Number <span className="text-red-500">*</span>
+//               </label>
+//               <input
+//                 type="tel"
+//                 name="whatsappNumber"
+//                 value={profileData.whatsappNumber}
+//                 onChange={handleChange}
+//                 disabled={!isEditing}
+//                 placeholder="Enter 10-digit number"
+//                 maxLength="10"
+//                 className={`w-full p-2.5 rounded-lg border ${
+//                   errors.whatsappNumber ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50"
+//                 } outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 text-sm ${
+//                   !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
+//                 }`}
+//               />
+//             </div>
+
+//             {/* Date of Birth */}
+//             <div>
+//               <label className="block text-sm font-medium text-gray-700 mb-1">
+//                 <FiCalendar className="inline mr-1" size={12} /> Date of Birth <span className="text-red-500">*</span>
+//               </label>
+//               <input
+//                 type="date"
+//                 name="dob"
+//                 value={profileData.dob}
+//                 onChange={handleChange}
+//                 disabled={!isEditing}
+//                 className={`w-full p-2.5 rounded-lg border ${
+//                   errors.dob ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50"
+//                 } outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 text-sm ${
+//                   !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
+//                 }`}
+//               />
+//             </div>
+
+//             {/* Marriage Anniversary Date */}
+//             <div>
+//               <label className="block text-sm font-medium text-gray-700 mb-1">
+//                 <FiHeart className="inline mr-1" size={12} /> Marriage Anniversary Date
+//                 <span className="text-gray-400 text-xs ml-1">(Optional)</span>
+//               </label>
+//               <input
+//                 type="date"
+//                 name="anniversaryDate"
+//                 value={profileData.anniversaryDate}
+//                 onChange={handleChange}
+//                 disabled={!isEditing}
+//                 className={`w-full p-2.5 rounded-lg border border-gray-300 bg-gray-50 outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 text-sm ${
+//                   !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
+//                 }`}
+//               />
+//             </div>
+
+//             {/* Church Family Number */}
+//             <div>
+//               <label className="block text-sm font-medium text-gray-700 mb-1">
+//                 <FiUsers className="inline mr-1" size={12} /> Church Family Number
+//                 <span className="text-gray-400 text-xs ml-1">(Optional)</span>
+//               </label>
+//               <input
+//                 type="text"
+//                 name="churchFamilyNumber"
+//                 value={profileData.churchFamilyNumber}
+//                 onChange={handleChange}
+//                 disabled={!isEditing}
+//                 placeholder="Enter your church family number"
+//                 className={`w-full p-2.5 rounded-lg border border-gray-300 bg-gray-50 outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 text-sm ${
+//                   !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
+//                 }`}
+//               />
+//             </div>
+
+//             {/* Info Card */}
+//             <div className="mt-6 p-4 rounded-lg bg-yellow-50 border border-yellow-200">
+//               <p className="text-xs text-yellow-700 text-center font-medium">
+//                 {isEditing && !isSaved 
+//                   ? "✏️ Fill all required fields and click Save" 
+//                   : !isEditing && isSaved
+//                   ? "✅ Profile saved! Click Edit to make changes"
+//                   : "📝 Please fill your profile details"}
+//               </p>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Validation Message */}
+//         <div className="px-6 pb-6">
+//           <p className="text-xs text-gray-500 text-center">
+//             <span className="text-red-500">*</span> Required fields must be filled to save
+//           </p>
+//         </div>
+//       </motion.div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ProfilePage;
+
+
+// import React, { useState } from "react";
+// import { toast, ToastContainer } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+// import { motion } from "framer-motion";
+// import { FiSave, FiEdit2, FiPhone, FiCalendar, FiHeart, FiCamera, FiMapPin, FiUser, FiUsers } from "react-icons/fi";
+// import { auth, db } from "../../firebase";
+// import { doc, updateDoc } from "firebase/firestore";
+// import { getDoc } from "firebase/firestore";
+// import { useEffect } from "react";
+
+// const ProfilePage = () => {
+//   const [isEditing, setIsEditing] = useState(true);
+//   const [isSaved, setIsSaved] = useState(false);
+//   const [profileData, setProfileData] = useState({
+//     fullName: "",
+//     gender: "",
+//     address: "",
+//     whatsappNumber: "",
+//     dob: "",
+//     anniversaryDate: "",
+//     churchFamilyNumber: "",
+//     photo: null,
+//     photoPreview: null,
+//   });
+
+//   const [errors, setErrors] = useState({});
+
+//   const handleChange = (e) => {
+//     const { name, value } = e.target;
+//     setProfileData({
+//       ...profileData,
+//       [name]: value,
+//     });
+//     if (errors[name]) {
+//       setErrors({ ...errors, [name]: "" });
+//     }
+//   };
+
+//   useEffect(() => {
+//     const loadProfile = async () => {
+//       const user = auth.currentUser;
+//       if (!user) return;
+
+//       const snap = await getDoc(doc(db, "users", user.uid));
+
+//       if (snap.exists()) {
+//         const data = snap.data();
+
+//         setProfileData({
+//           fullName: data.name || "",
+//           gender: data.gender || "",
+//           address: data.address || "",
+//           whatsappNumber: data.phone || "",
+//           dob: data.dob || "",
+//           anniversaryDate: data.anniversary || "",
+//           churchFamilyNumber: data.churchFamilyNumber || "",
+//           photo: null,
+//           photoPreview: null,
+//         });
+
+//         if (data.name && data.phone && data.dob) {
+//           setIsEditing(false);
+//           setIsSaved(true);
+//         } else {
+//           setIsEditing(true);
+//           setIsSaved(false);
+//         }
+//       }
+//     };
+
+//     loadProfile();
+//   }, []);
+
+//   const handlePhotoChange = (e) => {
+//     const file = e.target.files[0];
+//     if (file) {
+//       const reader = new FileReader();
+//       reader.onloadend = () => {
+//         setProfileData({
+//           ...profileData,
+//           photo: file,
+//           photoPreview: reader.result,
+//         });
+//       };
+//       reader.readAsDataURL(file);
+//     }
+//   };
+
+//   const validateForm = () => {
+//     const newErrors = {};
+
+//     if (!profileData.fullName.trim()) {
+//       newErrors.fullName = "Full name is required";
+//     }
+//     if (!profileData.gender) {
+//       newErrors.gender = "Gender is required";
+//     }
+//     if (!profileData.address.trim()) {
+//       newErrors.address = "Address is required";
+//     }
+//     if (!profileData.whatsappNumber.trim()) {
+//       newErrors.whatsappNumber = "WhatsApp number is required";
+//     } else if (!/^\d{10}$/.test(profileData.whatsappNumber)) {
+//       newErrors.whatsappNumber = "Enter valid 10-digit number";
+//     }
+//     if (!profileData.dob) {
+//       newErrors.dob = "Date of birth is required";
+//     }
+
+//     setErrors(newErrors);
+//     return Object.keys(newErrors).length === 0;
+//   };
+
+//   const handleSave = async () => {
+//     if (!validateForm()) {
+//       toast.error("Please fill all required fields");
+//       return;
+//     }
+
+//     try {
+//       const user = auth.currentUser;
+
+//       if (!user) {
+//         toast.error("User not logged in");
+//         return;
+//       }
+
+//       await updateDoc(doc(db, "users", user.uid), {
+//         name: profileData.fullName,
+//         gender: profileData.gender,
+//         address: profileData.address,
+//         phone: profileData.whatsappNumber,
+//         dob: profileData.dob,
+//         anniversary: profileData.anniversaryDate,
+//         churchFamilyNumber: profileData.churchFamilyNumber,
+//       });
+
+//       toast.success("Profile saved successfully 🎉");
+
+//       setIsEditing(false);
+//       setIsSaved(true);
+
+//     } catch (error) {
+//       console.log(error);
+//       toast.error("Failed to save profile");
+//     }
+//   };
+
+//   const handleEdit = () => {
+//     setIsEditing(true);
+//     setIsSaved(false);
+//     toast.info("You can now edit your profile");
+//   };
+
+//   return (
+//     <div className="w-full overflow-x-hidden">
+//       <ToastContainer theme="colored" />
+
+//       {/* Hero Section - Responsive */}
+//       <motion.div 
+//         initial={{ opacity: 0 }}
+//         animate={{ opacity: 1 }}
+//         transition={{ duration: 0.5 }}
+//         className="w-full"
+//       >
+//         <div className="relative bg-[url('https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=1600&auto=format&fit=crop&q=60')] bg-cover bg-center h-[50vh] sm:h-[60vh] md:h-screen flex items-center justify-center">
+//           <div className="absolute inset-0 bg-black/60"></div>
+//           <div className="relative z-10 text-center px-4">
+//             <motion.h1 
+//               initial={{ y: -30, opacity: 0 }}
+//               animate={{ y: 0, opacity: 1 }}
+//               transition={{ duration: 0.7, delay: 0.2 }}
+//               className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold"
+//             >
+//               MY PROFILE
+//             </motion.h1>
+//             <motion.p 
+//               initial={{ y: 30, opacity: 0 }}
+//               animate={{ y: 0, opacity: 1 }}
+//               transition={{ duration: 0.7, delay: 0.4 }}
+//               className="text-white text-sm sm:text-base md:text-lg lg:text-xl mt-2 sm:mt-3 md:mt-4 max-w-2xl mx-auto px-4"
+//             >
+//               Manage your personal information and keep your profile up to date
+//             </motion.p>
+//           </div>
+//         </div>
+//       </motion.div>
+
+//       {/* Profile Form Section - Responsive */}
+//       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-3 sm:p-4 md:p-6">
+//         <motion.div
+//           initial={{ opacity: 0, y: 20 }}
+//           animate={{ opacity: 1, y: 0 }}
+//           transition={{ duration: 0.5 }}
+//           className="max-w-5xl w-full mt-8 sm:mt-10 md:mt-12 lg:mt-16 mb-8 sm:mb-10 md:mb-12 bg-white rounded-xl sm:rounded-2xl shadow-2xl border border-gray-200 overflow-hidden mx-2 sm:mx-4"
+//         >
+//           {/* Header with Edit/Save Buttons - Responsive */}
+//           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 p-4 sm:p-5 md:p-6 border-b border-gray-200 bg-gradient-to-r from-yellow-50 to-orange-50">
+//             <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+//               My Profile
+//             </h2>
+            
+//             <div className="flex gap-2 sm:gap-3 w-full sm:w-auto justify-center">
+//               {/* Save Button */}
+//               <motion.button
+//                 whileHover={{ scale: 1.05 }}
+//                 whileTap={{ scale: 0.95 }}
+//                 onClick={handleSave}
+//                 className="flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 md:px-5 py-1.5 sm:py-2 bg-gradient-to-r from-green-500 to-green-600 rounded-lg text-white text-xs sm:text-sm font-medium hover:shadow-lg transition-all"
+//               >
+//                 <FiSave size={14} className="sm:size-16" />
+//                 <span>Save</span>
+//               </motion.button>
+
+//               {/* Edit Button */}
+//               <motion.button
+//                 whileHover={{ scale: 1.05 }}
+//                 whileTap={{ scale: 0.95 }}
+//                 onClick={handleEdit}
+//                 disabled={!isSaved}
+//                 className={`flex items-center justify-center gap-1 sm:gap-2 px-3 sm:px-4 md:px-5 py-1.5 sm:py-2 rounded-lg text-white text-xs sm:text-sm font-medium transition-all ${
+//                   !isSaved 
+//                     ? "bg-gray-400 cursor-not-allowed opacity-50" 
+//                     : "bg-gradient-to-r from-blue-500 to-blue-600 hover:shadow-lg"
+//                 }`}
+//               >
+//                 <FiEdit2 size={14} className="sm:size-16 " />
+//                 <span>Edit Profile</span>
+//               </motion.button>
+//             </div>
+//           </div>
+
+//           {/* Two Column Layout - Responsive (stacks on mobile) */}
+//           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 md:gap-6 p-4 sm:p-5 md:p-6">
+            
+//             {/* LEFT SIDE */}
+//             <div className="space-y-4 sm:space-y-5">
+//               {/* Photo Upload */}
+//               <div className="flex justify-center">
+//                 <div className="relative">
+//                   <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-yellow-400 to-orange-400 p-0.5">
+//                     <div className="w-full h-full rounded-full bg-white overflow-hidden flex items-center justify-center">
+//                       {profileData.photoPreview ? (
+//                         <img
+//                           src={profileData.photoPreview}
+//                           alt="Profile"
+//                           className="w-full h-full object-cover"
+//                         />
+//                       ) : (
+//                         <FiUser className="text-4xl sm:text-5xl text-gray-400" />
+//                       )}
+//                     </div>
+//                   </div>
+                  
+//                   {isEditing && (
+//                     <label className="absolute bottom-0 right-0 p-1 sm:p-1.5 bg-yellow-500 rounded-full cursor-pointer hover:bg-yellow-600 transition shadow-lg">
+//                       <FiCamera size={12} className="sm:size-14 text-white" />
+//                       <input
+//                         type="file"
+//                         accept="image/*"
+//                         onChange={handlePhotoChange}
+//                         className="hidden"
+//                       />
+//                     </label>
+//                   )}
+//                 </div>
+//               </div>
+
+//               {/* Full Name */}
+//               <div>
+//                 <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+//                   <FiUser className="inline mr-1" size={12} /> Full Name <span className="text-red-500">*</span>
+//                 </label>
+//                 <input
+//                   type="text"
+//                   name="fullName"
+//                   value={profileData.fullName}
+//                   onChange={handleChange}
+//                   disabled={!isEditing}
+//                   placeholder="Enter your full name"
+//                   className={`w-full p-2 sm:p-2.5 rounded-lg border text-sm ${
+//                     errors.fullName ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50"
+//                   } outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 ${
+//                     !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
+//                   }`}
+//                 />
+//                 {errors.fullName && <p className="text-xs text-red-500 mt-1">{errors.fullName}</p>}
+//               </div>
+
+//               {/* Gender */}
+//               <div>
+//                 <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
+//                   Gender <span className="text-red-500">*</span>
+//                 </label>
+//                 <div className="flex flex-wrap gap-3 sm:gap-6">
+//                   {["Male", "Female", "Other"].map((option) => (
+//                     <label key={option} className="flex items-center gap-1 sm:gap-2 cursor-pointer">
+//                       <input
+//                         type="radio"
+//                         name="gender"
+//                         value={option}
+//                         checked={profileData.gender === option}
+//                         onChange={handleChange}
+//                         disabled={!isEditing}
+//                         className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellow-500 focus:ring-yellow-500"
+//                       />
+//                       <span className={`text-xs sm:text-sm text-gray-700 ${!isEditing ? "opacity-60" : ""}`}>{option}</span>
+//                     </label>
+//                   ))}
+//                 </div>
+//                 {errors.gender && <p className="text-xs text-red-500 mt-1">{errors.gender}</p>}
+//               </div>
+
+//               {/* Address */}
+//               <div>
+//                 <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+//                   <FiMapPin className="inline mr-1" size={12} /> Address <span className="text-red-500">*</span>
+//                 </label>
+//                 <textarea
+//                   name="address"
+//                   value={profileData.address}
+//                   onChange={handleChange}
+//                   disabled={!isEditing}
+//                   rows={3}
+//                   placeholder="Enter your complete address"
+//                   className={`w-full p-2 sm:p-2.5 rounded-lg border text-sm ${
+//                     errors.address ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50"
+//                   } outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 resize-none ${
+//                     !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
+//                   }`}
+//                 />
+//                 {errors.address && <p className="text-xs text-red-500 mt-1">{errors.address}</p>}
+//               </div>
+//             </div>
+
+//             {/* RIGHT SIDE */}
+//             <div className="space-y-4 sm:space-y-5">
+//               {/* WhatsApp Number */}
+//               <div>
+//                 <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+//                   <FiPhone className="inline mr-1" size={12} /> WhatsApp Number <span className="text-red-500">*</span>
+//                 </label>
+//                 <input
+//                   type="tel"
+//                   name="whatsappNumber"
+//                   value={profileData.whatsappNumber}
+//                   onChange={handleChange}
+//                   disabled={!isEditing}
+//                   placeholder="Enter 10-digit number"
+//                   maxLength="10"
+//                   className={`w-full p-2 sm:p-2.5 rounded-lg border text-sm ${
+//                     errors.whatsappNumber ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50"
+//                   } outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 ${
+//                     !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
+//                   }`}
+//                 />
+//                 {errors.whatsappNumber && <p className="text-xs text-red-500 mt-1">{errors.whatsappNumber}</p>}
+//               </div>
+
+//               {/* Date of Birth */}
+//               <div>
+//                 <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+//                   <FiCalendar className="inline mr-1" size={12} /> Date of Birth <span className="text-red-500">*</span>
+//                 </label>
+//                 <input
+//                   type="date"
+//                   name="dob"
+//                   value={profileData.dob}
+//                   onChange={handleChange}
+//                   disabled={!isEditing}
+//                   className={`w-full p-2 sm:p-2.5 rounded-lg border text-sm ${
+//                     errors.dob ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50"
+//                   } outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 ${
+//                     !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
+//                   }`}
+//                 />
+//                 {errors.dob && <p className="text-xs text-red-500 mt-1">{errors.dob}</p>}
+//               </div>
+
+//               {/* Marriage Anniversary Date */}
+//               <div>
+//                 <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+//                   <FiHeart className="inline mr-1" size={12} /> Marriage Anniversary Date
+//                   <span className="text-gray-400 text-[10px] sm:text-xs ml-1">(Optional)</span>
+//                 </label>
+//                 <input
+//                   type="date"
+//                   name="anniversaryDate"
+//                   value={profileData.anniversaryDate}
+//                   onChange={handleChange}
+//                   disabled={!isEditing}
+//                   className={`w-full p-2 sm:p-2.5 rounded-lg border border-gray-300 bg-gray-50 outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 text-sm ${
+//                     !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
+//                   }`}
+//                 />
+//               </div>
+
+//               {/* Church Family Number */}
+//               <div>
+//                 <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+//                   <FiUsers className="inline mr-1" size={12} /> Church Family Number
+//                   <span className="text-gray-400 text-[10px] sm:text-xs ml-1">(Optional)</span>
+//                 </label>
+//                 <input
+//                   type="text"
+//                   name="churchFamilyNumber"
+//                   value={profileData.churchFamilyNumber}
+//                   onChange={handleChange}
+//                   disabled={!isEditing}
+//                   placeholder="Enter your church family number"
+//                   className={`w-full p-2 sm:p-2.5 rounded-lg border border-gray-300 bg-gray-50 outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 text-sm ${
+//                     !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
+//                   }`}
+//                 />
+//               </div>
+
+//               {/* Info Card */}
+//               <div className="mt-4 sm:mt-6 p-3 sm:p-4 rounded-lg bg-yellow-50 border border-yellow-200">
+//                 <p className="text-[10px] sm:text-xs text-yellow-700 text-center font-medium">
+//                   {isEditing && !isSaved 
+//                     ? "✏️ Fill all required fields and click Save" 
+//                     : !isEditing && isSaved
+//                     ? "✅ Profile saved! Click Edit to make changes"
+//                     : "📝 Please fill your profile details"}
+//                 </p>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Validation Message */}
+//           <div className="px-4 sm:px-5 md:px-6 pb-4 sm:pb-5 md:pb-6">
+//             <p className="text-[10px] sm:text-xs text-gray-500 text-center">
+//               <span className="text-red-500">*</span> Required fields must be filled to save
+//             </p>
+//           </div>
+//         </motion.div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ProfilePage;
+
+
 import React, { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -1721,8 +2623,6 @@ import { auth, db } from "../../firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import { getDoc } from "firebase/firestore";
 import { useEffect } from "react";
-
-
 
 const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(true);
@@ -1753,55 +2653,39 @@ const ProfilePage = () => {
   };
 
   useEffect(() => {
-  const loadProfile = async () => {
-    const user = auth.currentUser;
-    if (!user) return;
+    const loadProfile = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
 
-    const snap = await getDoc(doc(db, "users", user.uid));
+      const snap = await getDoc(doc(db, "users", user.uid));
 
-    // if (snap.exists()) {
-    //   const data = snap.data();
+      if (snap.exists()) {
+        const data = snap.data();
 
-    //   setProfileData({
-    //     fullName: data.name || "",
-    //     gender: data.gender || "",
-    //     address: data.address || "",
-    //     whatsappNumber: data.phone || "",
-    //     dob: data.dob || "",
-    //     anniversaryDate: data.anniversary || "",
-    //     churchFamilyNumber: data.churchFamilyNumber || "",
-    //     photo: null,
-    //     photoPreview: null,
-    //   });
-    // }
-    if (snap.exists()) {
-  const data = snap.data();
+        setProfileData({
+          fullName: data.name || "",
+          gender: data.gender || "",
+          address: data.address || "",
+          whatsappNumber: data.phone || "",
+          dob: data.dob || "",
+          anniversaryDate: data.anniversary || "",
+          churchFamilyNumber: data.churchFamilyNumber || "",
+          photo: null,
+          photoPreview: null,
+        });
 
-  setProfileData({
-    fullName: data.name || "",
-    gender: data.gender || "",
-    address: data.address || "",
-    whatsappNumber: data.phone || "",
-    dob: data.dob || "",
-    anniversaryDate: data.anniversary || "",
-    churchFamilyNumber: data.churchFamilyNumber || "",
-    photo: null,
-    photoPreview: null,
-  });
+        if (data.name && data.phone && data.dob) {
+          setIsEditing(false);
+          setIsSaved(true);
+        } else {
+          setIsEditing(true);
+          setIsSaved(false);
+        }
+      }
+    };
 
-  // ✅ ONLY mark saved if FULL DATA exists
-  if (data.name && data.phone && data.dob) {
-    setIsEditing(false);
-    setIsSaved(true);
-  } else {
-    setIsEditing(true);
-    setIsSaved(false);
-  }
-}
-  };
-
-  loadProfile();
-}, []);
+    loadProfile();
+  }, []);
 
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
@@ -1844,39 +2728,39 @@ const ProfilePage = () => {
   };
 
   const handleSave = async () => {
-  if (!validateForm()) {
-    toast.error("Please fill all required fields");
-    return;
-  }
-
-  try {
-    const user = auth.currentUser;
-
-    if (!user) {
-      toast.error("User not logged in");
+    if (!validateForm()) {
+      toast.error("Please fill all required fields");
       return;
     }
 
-    await updateDoc(doc(db, "users", user.uid), {
-      name: profileData.fullName,
-      gender: profileData.gender,
-      address: profileData.address,
-      phone: profileData.whatsappNumber,
-      dob: profileData.dob,
-      anniversary: profileData.anniversaryDate,
-      churchFamilyNumber: profileData.churchFamilyNumber,
-    });
+    try {
+      const user = auth.currentUser;
 
-    toast.success("Profile saved successfully 🎉");
+      if (!user) {
+        toast.error("User not logged in");
+        return;
+      }
 
-    setIsEditing(false);
-    setIsSaved(true);
+      await updateDoc(doc(db, "users", user.uid), {
+        name: profileData.fullName,
+        gender: profileData.gender,
+        address: profileData.address,
+        phone: profileData.whatsappNumber,
+        dob: profileData.dob,
+        anniversary: profileData.anniversaryDate,
+        churchFamilyNumber: profileData.churchFamilyNumber,
+      });
 
-  } catch (error) {
-    console.log(error);
-    toast.error("Failed to save profile");
-  }
-};
+      toast.success("Profile saved successfully 🎉");
+
+      setIsEditing(false);
+      setIsSaved(true);
+
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to save profile");
+    }
+  };
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -1885,24 +2769,24 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-x-hidden">
       <ToastContainer theme="colored" />
 
-      {/* Hero Section - Same style as Gallery page */}
+      {/* Hero Section - Responsive */}
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
         className="w-full"
       >
-        <div className="relative bg-[url('https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=1600&auto=format&fit=crop&q=60')] bg-cover bg-center h-screen flex items-center justify-center">
+        <div className="relative bg-[url('https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=1600&auto=format&fit=crop&q=60')] bg-cover bg-center h-[40vh] sm:h-[50vh] md:h-[60vh] lg:h-[100vh] flex items-center justify-center">
           <div className="absolute inset-0 bg-black/60"></div>
           <div className="relative z-10 text-center px-4">
             <motion.h1 
               initial={{ y: -30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="text-white text-5xl md:text-6xl font-bold"
+              className="text-white text-3xl sm:text-4xl md:text-5xl font-bold"
             >
               MY PROFILE
             </motion.h1>
@@ -1910,7 +2794,7 @@ const ProfilePage = () => {
               initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.7, delay: 0.4 }}
-              className="text-white text-lg md:text-xl mt-4 max-w-2xl mx-auto"
+              className="text-white text-sm sm:text-base md:text-lg mt-2 sm:mt-3 max-w-2xl mx-auto px-4"
             >
               Manage your personal information and keep your profile up to date
             </motion.p>
@@ -1918,254 +2802,257 @@ const ProfilePage = () => {
         </div>
       </motion.div>
 
-      {/* Profile Form Section - No changes */}
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+      {/* Profile Form Section - Responsive */}
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-3 sm:p-4">
         <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-5xl w-full mt-12 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden"
-      >
-        {/* Header with Edit/Save Buttons */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-yellow-50 to-orange-50">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
-            My Profile
-          </h2>
-          
-          <div className="flex gap-3">
-            {/* Save Button */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleSave}
-              className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-green-500 to-green-600 rounded-lg text-white text-sm font-medium hover:shadow-lg transition-all"
-            >
-              <FiSave size={16} />
-              Save
-            </motion.button>
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-5xl w-full mt-8 sm:mt-10 md:mt-12 mb-8 sm:mb-10 bg-white rounded-xl sm:rounded-2xl shadow-2xl border border-gray-200 overflow-hidden mx-2 sm:mx-4"
+        >
+          {/* Header with Edit/Save Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 sm:p-5 border-b border-gray-200 bg-gradient-to-r from-yellow-50 to-orange-50">
+            <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+              My Profile
+            </h2>
+            
+            <div className="flex gap-2">
+              {/* Save Button */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleSave}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-green-500 to-green-600 rounded-lg text-white text-sm font-medium hover:shadow-lg transition-all"
+              >
+                <FiSave size={14} />
+                <span>Save</span>
+              </motion.button>
 
-            {/* Edit Button - Enabled only after save */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleEdit}
-              disabled={!isSaved}
-              className={`flex items-center gap-2 px-5 py-2 rounded-lg text-white text-sm font-medium transition-all ${
-                !isSaved 
-                  ? "bg-gray-400 cursor-not-allowed opacity-50" 
-                  : "bg-gradient-to-r from-blue-500 to-blue-600 hover:shadow-lg"
-              }`}
-            >
-              <FiEdit2 size={16} />
-              Edit Profile
-            </motion.button>
+              {/* Edit Button */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleEdit}
+                disabled={!isSaved}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-white text-sm font-medium transition-all ${
+                  !isSaved 
+                    ? "bg-gray-400 cursor-not-allowed opacity-50" 
+                    : "bg-gradient-to-r from-blue-500 to-blue-600 hover:shadow-lg"
+                }`}
+              >
+                <FiEdit2 size={14} />
+                <span>Edit Profile</span>
+              </motion.button>
+            </div>
           </div>
-        </div>
 
-        {/* Two Column Layout */}
-        <div className="grid md:grid-cols-2 gap-6 p-6">
-          
-          {/* LEFT SIDE - Profile Pic, Name, Gender, Address */}
-          <div className="space-y-5">
-            {/* Photo Upload - Card Style */}
-            <div className="flex justify-center">
-              <div className="relative">
-                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-yellow-400 to-orange-400 p-0.5">
-                  <div className="w-full h-full rounded-full bg-white overflow-hidden flex items-center justify-center">
-                    {profileData.photoPreview ? (
-                      <img
-                        src={profileData.photoPreview}
-                        alt="Profile"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <FiUser className="text-5xl text-gray-400" />
-                    )}
+          {/* Two Column Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 p-4 sm:p-5">
+            
+            {/* LEFT SIDE */}
+            <div className="space-y-4">
+              {/* Photo Upload */}
+              <div className="flex justify-center">
+                <div className="relative">
+                  <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-yellow-400 to-orange-400 p-0.5">
+                    <div className="w-full h-full rounded-full bg-white overflow-hidden flex items-center justify-center">
+                      {profileData.photoPreview ? (
+                        <img
+                          src={profileData.photoPreview}
+                          alt="Profile"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <FiUser className="text-4xl text-gray-400" />
+                      )}
+                    </div>
                   </div>
+                  
+                  {isEditing && (
+                    <label className="absolute bottom-0 right-0 p-1.5 bg-yellow-500 rounded-full cursor-pointer hover:bg-yellow-600 transition shadow-lg">
+                      <FiCamera size={12} className="text-white" />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePhotoChange}
+                        className="hidden"
+                      />
+                    </label>
+                  )}
                 </div>
-                
-                {/* Photo upload only visible when editing */}
-                {isEditing && (
-                  <label className="absolute bottom-1 right-1 p-1.5 bg-yellow-500 rounded-full cursor-pointer hover:bg-yellow-600 transition shadow-lg">
-                    <FiCamera size={14} className="text-white" />
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handlePhotoChange}
-                      className="hidden"
-                    />
-                  </label>
-                )}
+              </div>
+
+              {/* Full Name */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <FiUser className="inline mr-1" size={12} /> Full Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="fullName"
+                  value={profileData.fullName}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  placeholder="Enter your full name"
+                  className={`w-full p-2.5 rounded-lg border text-sm ${
+                    errors.fullName ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50"
+                  } outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 ${
+                    !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
+                  }`}
+                />
+                {errors.fullName && <p className="text-xs text-red-500 mt-1">{errors.fullName}</p>}
+              </div>
+
+              {/* Gender */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Gender <span className="text-red-500">*</span>
+                </label>
+                <div className="flex gap-6">
+                  {["Male", "Female", "Other"].map((option) => (
+                    <label key={option} className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="gender"
+                        value={option}
+                        checked={profileData.gender === option}
+                        onChange={handleChange}
+                        disabled={!isEditing}
+                        className="w-4 h-4 text-yellow-500 focus:ring-yellow-500"
+                      />
+                      <span className={`text-sm text-gray-700 ${!isEditing ? "opacity-60" : ""}`}>{option}</span>
+                    </label>
+                  ))}
+                </div>
+                {errors.gender && <p className="text-xs text-red-500 mt-1">{errors.gender}</p>}
+              </div>
+
+              {/* Address */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <FiMapPin className="inline mr-1" size={12} /> Address <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  name="address"
+                  value={profileData.address}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  rows={3}
+                  placeholder="Enter your complete address"
+                  className={`w-full p-2.5 rounded-lg border text-sm ${
+                    errors.address ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50"
+                  } outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 resize-none ${
+                    !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
+                  }`}
+                />
+                {errors.address && <p className="text-xs text-red-500 mt-1">{errors.address}</p>}
               </div>
             </div>
 
-            {/* Full Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                <FiUser className="inline mr-1" size={12} /> Full Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="fullName"
-                value={profileData.fullName}
-                onChange={handleChange}
-                disabled={!isEditing}
-                placeholder="Enter your full name"
-                className={`w-full p-2.5 rounded-lg border ${
-                  errors.fullName ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50"
-                } outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 text-sm ${
-                  !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
-                }`}
-              />
-            </div>
+            {/* RIGHT SIDE */}
+            <div className="space-y-4">
+              {/* WhatsApp Number */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <FiPhone className="inline mr-1" size={12} /> WhatsApp Number <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  name="whatsappNumber"
+                  value={profileData.whatsappNumber}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  placeholder="Enter 10-digit number"
+                  maxLength="10"
+                  className={`w-full p-2.5 rounded-lg border text-sm ${
+                    errors.whatsappNumber ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50"
+                  } outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 ${
+                    !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
+                  }`}
+                />
+                {errors.whatsappNumber && <p className="text-xs text-red-500 mt-1">{errors.whatsappNumber}</p>}
+              </div>
 
-            {/* Gender */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Gender <span className="text-red-500">*</span>
-              </label>
-              <div className="flex gap-6">
-                {["Male", "Female", "Other"].map((option) => (
-                  <label key={option} className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="gender"
-                      value={option}
-                      checked={profileData.gender === option}
-                      onChange={handleChange}
-                      disabled={!isEditing}
-                      className="w-4 h-4 text-yellow-500 focus:ring-yellow-500"
-                    />
-                    <span className={`text-sm text-gray-700 ${!isEditing ? "opacity-60" : ""}`}>{option}</span>
-                  </label>
-                ))}
+              {/* Date of Birth */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <FiCalendar className="inline mr-1" size={12} /> Date of Birth <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  name="dob"
+                  value={profileData.dob}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className={`w-full p-2.5 rounded-lg border text-sm ${
+                    errors.dob ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50"
+                  } outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 ${
+                    !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
+                  }`}
+                />
+                {errors.dob && <p className="text-xs text-red-500 mt-1">{errors.dob}</p>}
+              </div>
+
+              {/* Marriage Anniversary Date */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <FiHeart className="inline mr-1" size={12} /> Marriage Anniversary Date
+                  <span className="text-gray-400 text-xs ml-1">(Optional)</span>
+                </label>
+                <input
+                  type="date"
+                  name="anniversaryDate"
+                  value={profileData.anniversaryDate}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className={`w-full p-2.5 rounded-lg border border-gray-300 bg-gray-50 outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 text-sm ${
+                    !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
+                  }`}
+                />
+              </div>
+
+              {/* Church Family Number */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <FiUsers className="inline mr-1" size={12} /> Church Family Number
+                  <span className="text-gray-400 text-xs ml-1">(Optional)</span>
+                </label>
+                <input
+                  type="text"
+                  name="churchFamilyNumber"
+                  value={profileData.churchFamilyNumber}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  placeholder="Enter your church family number"
+                  className={`w-full p-2.5 rounded-lg border border-gray-300 bg-gray-50 outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 text-sm ${
+                    !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
+                  }`}
+                />
+              </div>
+
+              {/* Info Card */}
+              <div className="mt-4 p-3 rounded-lg bg-yellow-50 border border-yellow-200">
+                <p className="text-xs text-yellow-700 text-center font-medium">
+                  {isEditing && !isSaved 
+                    ? "✏️ Fill all required fields and click Save" 
+                    : !isEditing && isSaved
+                    ? "✅ Profile saved! Click Edit to make changes"
+                    : "📝 Please fill your profile details"}
+                </p>
               </div>
             </div>
-
-            {/* Address */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                <FiMapPin className="inline mr-1" size={12} /> Address <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                name="address"
-                value={profileData.address}
-                onChange={handleChange}
-                disabled={!isEditing}
-                rows="3"
-                placeholder="Enter your complete address"
-                className={`w-full p-2.5 rounded-lg border ${
-                  errors.address ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50"
-                } outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 text-sm resize-none ${
-                  !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
-                }`}
-              />
-            </div>
           </div>
 
-          {/* RIGHT SIDE */}
-          <div className="space-y-5">
-            {/* WhatsApp Number */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                <FiPhone className="inline mr-1" size={12} /> WhatsApp Number <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="tel"
-                name="whatsappNumber"
-                value={profileData.whatsappNumber}
-                onChange={handleChange}
-                disabled={!isEditing}
-                placeholder="Enter 10-digit number"
-                maxLength="10"
-                className={`w-full p-2.5 rounded-lg border ${
-                  errors.whatsappNumber ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50"
-                } outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 text-sm ${
-                  !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
-                }`}
-              />
-            </div>
-
-            {/* Date of Birth */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                <FiCalendar className="inline mr-1" size={12} /> Date of Birth <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="date"
-                name="dob"
-                value={profileData.dob}
-                onChange={handleChange}
-                disabled={!isEditing}
-                className={`w-full p-2.5 rounded-lg border ${
-                  errors.dob ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50"
-                } outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 text-sm ${
-                  !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
-                }`}
-              />
-            </div>
-
-            {/* Marriage Anniversary Date */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                <FiHeart className="inline mr-1" size={12} /> Marriage Anniversary Date
-                <span className="text-gray-400 text-xs ml-1">(Optional)</span>
-              </label>
-              <input
-                type="date"
-                name="anniversaryDate"
-                value={profileData.anniversaryDate}
-                onChange={handleChange}
-                disabled={!isEditing}
-                className={`w-full p-2.5 rounded-lg border border-gray-300 bg-gray-50 outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 text-sm ${
-                  !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
-                }`}
-              />
-            </div>
-
-            {/* Church Family Number */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                <FiUsers className="inline mr-1" size={12} /> Church Family Number
-                <span className="text-gray-400 text-xs ml-1">(Optional)</span>
-              </label>
-              <input
-                type="text"
-                name="churchFamilyNumber"
-                value={profileData.churchFamilyNumber}
-                onChange={handleChange}
-                disabled={!isEditing}
-                placeholder="Enter your church family number"
-                className={`w-full p-2.5 rounded-lg border border-gray-300 bg-gray-50 outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all text-gray-800 text-sm ${
-                  !isEditing ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
-                }`}
-              />
-            </div>
-
-            {/* Info Card */}
-            <div className="mt-6 p-4 rounded-lg bg-yellow-50 border border-yellow-200">
-              <p className="text-xs text-yellow-700 text-center font-medium">
-                {isEditing && !isSaved 
-                  ? "✏️ Fill all required fields and click Save" 
-                  : !isEditing && isSaved
-                  ? "✅ Profile saved! Click Edit to make changes"
-                  : "📝 Please fill your profile details"}
-              </p>
-            </div>
+          {/* Validation Message */}
+          <div className="px-5 pb-5">
+            <p className="text-xs text-gray-500 text-center">
+              <span className="text-red-500">*</span> Required fields must be filled to save
+            </p>
           </div>
-        </div>
-
-        {/* Validation Message */}
-        <div className="px-6 pb-6">
-          <p className="text-xs text-gray-500 text-center">
-            <span className="text-red-500">*</span> Required fields must be filled to save
-          </p>
-        </div>
-      </motion.div>
+        </motion.div>
       </div>
     </div>
   );
 };
 
 export default ProfilePage;
-
